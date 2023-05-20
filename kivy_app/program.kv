@@ -1,0 +1,45 @@
+WindowMenager:
+    FirstWindow:
+    SecondWindow:
+
+
+<FirstWindow>:
+    name: "first"
+    id: first_screen
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width , root.height
+
+        Label:
+            text: "Jakaś zachęta"
+            size_hint: 1 , 0.1
+        Label:
+            id: plik
+            text:"Tu będzie wybrany plik do przemyśleia"
+            size_hint: 1, 0.1
+
+
+        FileChooserListView:
+            id: filechooser
+            path: "."
+            size_hint: 1, 0.7
+            on_selection: first_screen.selected(filechooser.selection)
+            
+
+        Button:
+            text: "Dalej"
+            size_hint: 1, 0.1 
+            on_release: 
+                app.root.current = "second"
+                root.manager.transition.direction = "left"
+
+<SecondWindow>:
+    name: "second"
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        Button:
+            text: "Powrot"
+            on_release: 
+                app.root.current = "first"
+                root.manager.transition.direction = "right"
