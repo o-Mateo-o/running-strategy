@@ -1,6 +1,7 @@
 WindowMenager:
     FirstWindow:
     SecondWindow:
+    InfoWindow:
 
 
 <FirstWindow>:
@@ -10,6 +11,12 @@ WindowMenager:
         orientation: "vertical"
         size: root.width , root.height
 
+        Button:
+            id: go_info
+            text: "Instrukcja"
+            size_hint: 1 , 0.1
+            on_release:
+                app.root.current = "infopage"
         Label:
             text: "Jakaś zachęta"
             size_hint: 1 , 0.1
@@ -35,11 +42,29 @@ WindowMenager:
 
 <SecondWindow>:
     name: "second"
+    id: second_screen
     BoxLayout:
         orientation: "vertical"
         size: root.width, root.height
         Button:
             text: "Powrot"
             on_release: 
+                # second_screen.check()
                 app.root.current = "first"
                 root.manager.transition.direction = "right"
+
+<InfoWindow>:
+    name: "infopage"
+    id: infowindow
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        Label:
+            id: info
+            text: "instrukcja"
+        Button:
+            id: back_button
+            text: "Powrót"
+            size_hint: 1, 0.1
+            on_release:
+                app.root.current = "first"

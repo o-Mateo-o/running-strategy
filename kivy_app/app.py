@@ -9,7 +9,8 @@ import numpy as np
 import pandas as pd
 
 
-
+class InfoWindow(Screen):
+    pass
 class FirstWindow(Screen):
     df = None
     def selected(self, filename):
@@ -26,6 +27,10 @@ class FirstWindow(Screen):
 
 
 class SecondWindow(Screen):
+    # df = None
+    # def check(self):
+    #     self.df = MyApp.WindowMenager.FirstWindow.df
+    #     print(self.df.columns)
     pass
 
 
