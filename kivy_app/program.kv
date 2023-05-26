@@ -106,6 +106,7 @@ WindowMenager:
 
         TextInput:
             text: 'Podaj dystans'
+            padding_x: 0.15*self.width
             multiline: False
             input_filter: 'float'
             on_focus: self.text = '' if args[1] else self.text
@@ -127,6 +128,7 @@ WindowMenager:
             orientation: 'horizontal'
             size_hint: 0.4, 0.05
             pos: 0.5*root.width, 0.7*root.height
+            cursor_image: './images/runner.png'
 
         Label:
             id: percent
@@ -145,7 +147,7 @@ WindowMenager:
             id: run
             text:'Oblicz'
             pos: 0.45*root.width, 0.6*root.height
-        
+
         MyButton:
             text: "Powrót"
             size_hint: 0.1, 0.05
@@ -154,6 +156,48 @@ WindowMenager:
                 app.root.current = "first"
                 root.manager.transition.direction = "right"
 
+        BoxLayout:
+            orientacion: 'horizontal'
+            size: (0.6*root.width, 0.1*root.height)
+            size_hint: None, None
+            pos: 0.2*root.width, 0.45*root.height
+
+            Label:
+                text: 'Prognozowany czas:'
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            Label:
+                id: est_time
+                text: 'Tu będzie wynik'
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+        GridLayout:
+            cols: 1
+            rows: 1
+            size: (0.6*root.width, 0.25*root.height)
+            size_hint: None, None
+            pos: 0.2*root.width, 0.2*root.height
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.3
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                multiline: True
+                text: 'Ewentualne błędy/ostrzeżenia.'         
+
+
 
 <InfoWindow>:
     name: "infopage"
@@ -161,7 +205,7 @@ WindowMenager:
     FloatLayout:
         Label:
             id: info
-            pos_hint: {'center': (.5, 0.9)}
+            pos_hint: {'center': (.5, 0.8)}
             markup: True
             text: "[size=20][u]Instrukcja[/u][/size] \nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
 
