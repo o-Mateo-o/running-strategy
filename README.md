@@ -19,6 +19,8 @@ Następnie, z wersją Pythona 3.9.7 uruchamiamy w terminalu główny plik komend
     
 Powinna wtedy otworzyć się okienkowa aplikacja z całą dostępną funkcjonalnością.
 
+Do przechowywania lokalnie danych przeznaczony jest folder `./data`, jednak można wybierać także pliki spoza niego.
+
 ## Technologie
 ...
 
