@@ -91,8 +91,8 @@ class DataPreprocessor:
 
     def run(self) -> tuple:
         self._validate_format()
-        self.df_working = self._subset()
-        self.df_working = self._cleanse()
+        self._subset()
+        self._cleanse()
         self._bound()
         self._keep_records()
         self._assess_quality()
