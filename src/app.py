@@ -3,26 +3,26 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-
+from typing import Any,Union
 from src.processing import DataHandler, ProcessingError
 from src.assets import AssetPaths
 from src.widgets import FileInfo, MySpinner
 
 
 class MainScreen(Screen):
-    def __init__(self, **kw):
+    def __init__(self, **kw) -> None:
         self.data_handler = None
         super().__init__(**kw)
 
-    def _reset_spinners(self):
+    def _reset_spinners(self) -> None:
         self.ids.spinner_time.reset()
         self.ids.spinner_distance.reset()
 
-    def display_error(self, msg, file_hint=False):
+    def display_error(self, msg: str, file_hint: bool = False) -> None:
         self.ids.file_info.print_error(msg, file_hint)
         self._reset_spinners()
 
-    def go_results_action(self):
+    def go_results_action(self) -> None:
         try:
             self.data_handler.preprocess_data(
                 self.ids.spinner_distance.text, self.ids.spinner_time.text
@@ -31,7 +31,7 @@ class MainScreen(Screen):
         except ProcessingError as msg:
             self.display_error(msg)
 
-    def choose_file(self, paths):
+    def choose_file(self, paths: list) -> None:
         try:
             # read and digest the file
             self.data_handler.process_file(paths[0])
@@ -42,7 +42,7 @@ class MainScreen(Screen):
         except ProcessingError as msg:
             self.display_error(msg, file_hint=True)
 
-    def click_file(self, paths):
+    def click_file(self, paths: list) -> None:
         if paths:
             self.choose_file(paths)
 
@@ -56,11 +56,11 @@ class InfoScreen(Screen):
 
 
 class WindowManager(ScreenManager):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         self.data_handler = DataHandler()
         super().__init__(**kwargs)
 
-    def add_widget(self, widget, *args, **kwargs):
+    def add_widget(self, widget: Screen, *args, **kwargs) -> None:
         super().add_widget(widget, *args, **kwargs)
         widget.data_handler = self.data_handler
 
@@ -68,5 +68,5 @@ class WindowManager(ScreenManager):
 class KarczRunApp(App):
     assets = AssetPaths()
 
-    def build(self):
+    def build(self) -> Union[Any, None]:
         return Builder.load_file(str(Path("src", "app.kv")))

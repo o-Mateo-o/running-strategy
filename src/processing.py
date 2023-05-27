@@ -2,7 +2,6 @@ import pandas as pd
 import re
 import numpy as np
 
-
 class ProcessingError(Exception):
     ...
 
@@ -63,6 +62,9 @@ class DataPreprocessor:
 
     def _cleanse(self) -> None:
         self.df.dropna(inplace=True)
+
+    def _floatify(self) -> None:
+        pass
 
     def _approve_quality(self) -> None:
         if not any([q > 0 for q in self.data_quality]):
