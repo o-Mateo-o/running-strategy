@@ -42,15 +42,6 @@ WindowManager:
     name: "main_screen"
     id: main_screen
     FloatLayout:
-        padding: 100
-        MyButton:
-            id: go_info
-            text: "Instrukcja"
-            pos: 0.45 * root.width, 0.85 * root.height
-            on_release:
-                root.manager.transition.direction = "right"
-                app.root.current = "info_screen"
-
         Label:
             text: "LOGO APLIKACJI"
             size_hint: 1 , 0.1
@@ -88,9 +79,17 @@ WindowManager:
             text: '<rozwiń>'
         
         MyButton:
+            id: go_info
+            text: "Instrukcja"
+            pos: 0.25 * root.width, 0.05 * root.height
+            on_release:
+                root.manager.transition.direction = "right"
+                app.root.current = "info_screen"
+
+        MyButton:
             id: go_results
             text: "Dalej"
-            pos: 0.45 * root.width, 0.05 * root.height
+            pos: 0.65 * root.width, 0.05 * root.height
             on_release:
                 root.manager.transition.direction = "left"
                 main_screen.go_results_action()

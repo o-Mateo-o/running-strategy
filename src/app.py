@@ -10,6 +10,10 @@ from src.processing import DataHandler
 class FileInfo(Label):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.print_prompt()
+
+    def print_prompt(self):
+        self.color = (1, 1, 1)
         self.text = "Wybierz plik z danymi z listy."
 
     def print_success(self, filename):
@@ -18,7 +22,7 @@ class FileInfo(Label):
 
     def print_error(self, message):
         self.color = (1, 0, 0)
-        self.text = f"BŁĄD: {message}."
+        self.text = f"BŁĄD: {message}.\nSpróbuj wybrać plik jeszcze raz."
 
 
 class MainScreen(Screen):
@@ -32,9 +36,8 @@ class MainScreen(Screen):
         else:
             # show an error
             pass
-
+    
     def choose_file(self, paths):
-        # self.ids.file_info = "Wybierz plik z listy."
         self.data_handler.process_file(paths[0])
 
         if self.data_handler.digested:
