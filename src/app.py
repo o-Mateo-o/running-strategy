@@ -4,9 +4,9 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 
-from src.processing import DataHandler
+from src.processing import DataHandler, ProcessingError
 from src.assets import AssetPaths
-from src.widgets import FileInfo
+from src.widgets import FileInfo, MySpinner
 
 
 class MainScreen(Screen):
@@ -14,38 +14,40 @@ class MainScreen(Screen):
         self.data_handler = None
         super().__init__(**kw)
 
+    def _reset_spinners(self):
+        self.ids.spinner_time.reset()
+        self.ids.spinner_distance.reset()
+
+    def display_error(self, msg, file_hint=False):
+        self.ids.file_info.print_error(msg, file_hint)
+        self._reset_spinners()
+
     def go_results_action(self):
-        if True:
+        try:
+            self.data_handler.preprocess_data(
+                self.ids.spinner_distance.text, self.ids.spinner_time.text
+            )
             self.manager.current = "results_screen"
-        else:
-            # show an error
-            pass
+        except ProcessingError as msg:
+            self.display_error(msg)
 
     def choose_file(self, paths):
-        self.data_handler.process_file(paths[0])
-
-        if self.data_handler.digested:
-            filename = Path(paths[0]).name
-            self.ids.file_info.print_success(filename)
+        try:
+            # read and digest the file
+            self.data_handler.process_file(paths[0])
+            # show the filename info and add its columns to the spinners
+            self.ids.file_info.print_success(Path(paths[0]).name)
             self.ids.spinner_distance.values = self.data_handler.cols
             self.ids.spinner_time.values = self.data_handler.cols
-        else:
-            first_error_message = self.data_handler.error_messages[0]
-            self.ids.file_info.print_error(first_error_message)
+        except ProcessingError as msg:
+            self.display_error(msg, file_hint=True)
 
     def click_file(self, paths):
         if paths:
             self.choose_file(paths)
 
 
-# klasa do file info która na kolorowo wyświetla rzeczhy
-
-
 class ResultsScreen(Screen):
-    # df = None
-    # def check(self):
-    #     self.df = MyApp.WindowMenager.FirstWindow.df
-    #     print(self.df.columns)
     pass
 
 
@@ -65,5 +67,6 @@ class WindowManager(ScreenManager):
 
 class KarczRunApp(App):
     assets = AssetPaths()
+
     def build(self):
         return Builder.load_file(str(Path("src", "app.kv")))

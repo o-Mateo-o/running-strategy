@@ -23,7 +23,7 @@ WindowManager:
     font_size: 17
 
 
-<Spinner>:
+<MySpinner>:
     size_hint: None, None
     size: 100, 44
     background_color: 0, 0, 0, 1
@@ -64,19 +64,17 @@ WindowManager:
             text: 'Kolumna dystansów:'
             pos_hint: {'center': (.2, .7)}
         
-        Spinner:
+        MySpinner:
             id: spinner_distance
             pos_hint: {'center': (.3, .7)}
-            text: '<rozwiń>'
         
         Label:
             text: 'Kolumna czasów:'
             pos_hint: {'center': (.6, .7)}
 
-        Spinner:
+        MySpinner:
             id: spinner_time
             pos_hint: {'center': (.7, .7)}
-            text: '<rozwiń>'
         
         MyButton:
             id: go_info

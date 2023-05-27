@@ -1,34 +1,79 @@
 import pandas as pd
 import re
+import numpy as np
+
+
+class ProcessingError(Exception):
+    ...
+
 
 class DataHandler:
     def __init__(self) -> None:
-        self.df = None
-        self.digested = False
-        self.cols = []
-        self.error_messages = []
+        self.df_raw = None
+        self.df_working = None
+        self.data_quality = [0, 0, 0]
 
-    def _read_file(self, path):
+    @property
+    def cols(self) -> np.ndarray:
+        return self.df_raw.columns.values
+
+    def _read_file(self, path: str) -> None:
         try:
-            self.df = pd.read_csv(path)
-            self.digested = True
+            self.df_raw = pd.read_csv(path)
         except pd.errors.EmptyDataError:
-            self.error_messages.append("Empty data")
+            raise ProcessingError("Zestaw danych jest pusty")
         except UnicodeDecodeError:
-            self.error_messages.append("Unicode decode")
+            raise ProcessingError("Napotkano problem podczas dekodowania pliku")
 
-    def process_file(self, path):
+    def process_file(self, path: str) -> None:
         self.reset_data()
         if bool(re.search(".csv$", path)):
             self._read_file(path)
         else:
-            self.error_messages.append("Only csv files are accepted")
-        if self.digested:
-            self.cols = self.df.columns.values
+            raise ProcessingError("Akceptowanym formatem jest tylko CSV")
+
+    def preprocess_data(self, col_d: str, col_t: str) -> None:
+        data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t)
+        self.df_working, self.data_quality = data_preprocessor.run()
+
+    def reset_data(self) -> None:
+        self.df_raw = None
+        self.df_working = None
+        self.data_quality = [0, 0, 0]
 
 
-    def reset_data(self):
-        self.df = None
-        self.digested = False
-        self.cols = []
-        self.error_messages = []
+class DataPreprocessor:
+    def __init__(self, df: pd.DataFrame, col_d: str, col_t: str) -> None:
+        self.df = df
+        self.col_d = col_d
+        self.col_t = col_t
+        self.data_quality = [3, 3, 3]
+
+    def _validate_format(self) -> None:
+        if not isinstance(self.df, pd.DataFrame):
+            raise ProcessingError("Nie wybrano zestawu danych")
+        if self.df.empty:
+            return ProcessingError("Zestaw danych jest pusty")
+
+    def _subset(self) -> None:
+        try:
+            self.df = self.df[[self.col_d, self.col_t]]
+        except KeyError:
+            return ProcessingError("Nie znaleziono wybranej kolumny w zestawie danych")
+
+    def _cleanse(self) -> None:
+        self.df.dropna(inplace=True)
+
+    def _approve_quality(self) -> None:
+        if not any([q > 0 for q in self.data_quality]):
+            raise ProcessingError(
+                "Niezidentyfikowane błędy w danych uniemożliwiają kalkulacje"
+            )
+
+    def run(self) -> tuple:
+        self._validate_format()
+        self.df_working = self._subset()
+        self.df_working = self._cleanse()
+        # ...
+        self._approve_quality()
+        return self.df, self.data_quality
