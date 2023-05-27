@@ -6,6 +6,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 
 from src.processing import DataHandler
 from src.assets import AssetPaths
+from src.widgets import FileInfo
 
 
 class MainScreen(Screen):
