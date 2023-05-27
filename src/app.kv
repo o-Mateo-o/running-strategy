@@ -39,8 +39,8 @@ WindowManager:
 
 
 <MainScreen>:
-    name: "first_screen"
-    id: first_screen
+    name: "main_screen"
+    id: main_screen
     FloatLayout:
         padding: 100
         MyButton:
@@ -52,25 +52,26 @@ WindowManager:
                 app.root.current = "info_screen"
 
         Label:
-            text: "Jakaś zachęta"
+            text: "LOGO APLIKACJI"
             size_hint: 1 , 0.1
             pos: 0, 0.9 * root.height
 
         Label:
-            id: file
-            text:"Tu będzie wybrany plik do przemyślenia"
+            id: file_info
+            text: "Wybierz plik z danymi z listy." # TODO: might be handled elswhere
             size_hint: 1, 0.1
+            multiline: True
             pos: 0, 0.75 * root.height
 
-        FileChooserListView:
+        FileChooserIconView:
             id: filechooser
             path: "data"
             size_hint_y: 0.65
             height: 100
-            on_selection: first_screen.selected(filechooser.selection)
+            on_selection: main_screen.click_file(filechooser.selection)
 
         Label:
-            text: 'Dystans:'
+            text: 'Kolumna dystansów:'
             pos_hint: {'center': (.2, .7)}
         
         Spinner:
@@ -79,7 +80,7 @@ WindowManager:
             text: '<rozwiń>'
         
         Label:
-            text: 'Czas:'
+            text: 'Kolumna czasów:'
             pos_hint: {'center': (.6, .7)}
 
         Spinner:
@@ -93,7 +94,7 @@ WindowManager:
             pos: 0.45 * root.width, 0.05 * root.height
             on_release:
                 root.manager.transition.direction = "left"
-                app.root.current = "results_screen"
+                main_screen.go_results_action()
 
 
 <ResultsScreen>:
@@ -157,7 +158,7 @@ WindowManager:
             pos: 0.45 * root.width, 0.05 * root.height
             on_release:
                 root.manager.transition.direction = "right"
-                app.root.current = "first_screen"
+                app.root.current = "main_screen"
                 
 
         BoxLayout:
@@ -219,5 +220,5 @@ WindowManager:
             pos: 0.45 * root.width, 0.05 * root.height
             on_release:
                 root.manager.transition.direction = "left"
-                app.root.current = "first_screen"
+                app.root.current = "main_screen"
  
