@@ -1,5 +1,6 @@
 # KarczRun
-
+[![version](https://img.shields.io/badge/Version-development-red)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](https://opensource.org/licenses/MIT)
 
 ## Opis projektu
 
@@ -22,7 +23,8 @@ Powinna wtedy otworzyć się okienkowa aplikacja z całą dostępną funkcjonaln
 Do przechowywania lokalnie danych przeznaczony jest folder `./data`, jednak można wybierać także pliki spoza niego.
 
 ## Technologie
-...
+[![Python](https://img.shields.io/badge/Python-3.9.7-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
+[![Kivy](https://img.shields.io/badge/Kivy-2.2.0-blue)](https://kivy.org/ "Go to Kivy homepage")
 
 ## Autorzy
  - [Natalia Iwańska](https://github.com/natalia185),
