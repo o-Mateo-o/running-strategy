@@ -1,0 +1,12 @@
+min_distance: 0
+max_distance: 0 
+required_points:
+  short:
+    min: 5
+    reliable: 15
+  mid:
+    min: 5
+    reliable: 15
+  long:
+    min: 6
+    reliable: 20

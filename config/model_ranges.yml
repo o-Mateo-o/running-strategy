@@ -1,0 +1,12 @@
+short:
+  direction: "asc"
+  optimal: 0
+  extended: 0
+mid:
+  direction: "asc"
+  optimal: 0
+  extended: 0
+long:
+  direction: "desc"
+  optimal: 0 
+  extended: 0

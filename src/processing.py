@@ -1,6 +1,8 @@
 import pandas as pd
 import re
 import numpy as np
+import yaml
+from pathlib import Path
 
 class ProcessingError(Exception):
     ...
@@ -64,6 +66,21 @@ class DataPreprocessor:
         self.df.dropna(inplace=True)
 
     def _floatify(self) -> None:
+        # TODO: WRITE IT
+        pass
+
+    def _bound(self) -> None:
+        with open(Path("config", "ranges.yml"), 'r') as f:
+            model_const = yaml.safe_load(f)
+
+        # TODO: WRITE IT
+
+    def _keep_records(self) -> None:
+        # TODO: WRITE IT
+        pass
+
+    def _assess_quality(self) -> None:
+        # TODO: WRITE IT
         pass
 
     def _approve_quality(self) -> None:
@@ -76,6 +93,8 @@ class DataPreprocessor:
         self._validate_format()
         self.df_working = self._subset()
         self.df_working = self._cleanse()
-        # ...
+        self._bound()
+        self._keep_records()
+        self._assess_quality()
         self._approve_quality()
         return self.df, self.data_quality

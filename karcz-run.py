@@ -10,6 +10,7 @@ if __name__ == "__main__":
     Config.set("graphics", "resizable", True)
     Config.set("graphics", "height", "500")
     Config.set("graphics", "width", "700")
+    # Window import can be done only after configuration is completed
     from src.app import *
 
     KarczRunApp().run()
