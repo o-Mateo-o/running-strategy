@@ -1,12 +1,13 @@
 WindowManager:
-    FirstWindow:
-    SecondWindow:
-    InfoWindow:
+    MainScreen:
+    InfoScreen:
+    ResultsScreen:
+    
 
 
 <MyButton@Button>:
     font_name: 'Tahoma'
-    font_size: 0.5*self.height
+    font_size: 0.5 * self.height
     background_color: 0, 0, 0, 0
     size_hint: 0.1, 0.05
     canvas.before:
@@ -26,7 +27,7 @@ WindowManager:
 <Spinner>:
     size_hint: None, None
     size: 100, 44
-    background_color: 0,0,0,1
+    background_color: 0, 0, 0, 1
 
 
 <FloatLayout>:
@@ -38,46 +39,44 @@ WindowManager:
             size: self.size
 
 
-<FirstWindow>:
-    name: "first"
+<MainScreen>:
+    name: "first_screen"
     id: first_screen
     FloatLayout:
         MyButton:
             id: go_info
             text: "Instrukcja"
-            pos: 0.45*root.width, 0.85*root.height
+            pos: 0.45 * root.width, 0.85 * root.height
             on_release:
-                app.root.current = "infopage"
+                app.root.current = "info_screen"
 
         Label:
             text: "Jakaś zachęta"
             size_hint: 1 , 0.1
-            pos: 0, 0.9*root.height
+            pos: 0, 0.9 * root.height
 
         Label:
-            id: plik
+            id: file
             text:"Tu będzie wybrany plik do przemyślenia"
             size_hint: 1, 0.1
-            pos: 0, 0.75*root.height
+            pos: 0, 0.75 * root.height
 
         FileChooserListView:
             id: filechooser
-            path: "."
+            path: "data"
             size_hint: 1, 0.65
             on_selection: first_screen.selected(filechooser.selection)
 
         Label:
-            id: distance
             text: 'Dystans:'
             pos_hint: {'center': (.2, .7)}
         
         Spinner:
-            id: spinner_dist
+            id: spinner_distance
             pos_hint: {'center': (.3, .7)}
             text: '<rozwiń>'
         
         Label:
-            id: distance
             text: 'Czas:'
             pos_hint: {'center': (.6, .7)}
 
@@ -87,53 +86,54 @@ WindowManager:
             text: '<rozwiń>'
         
         MyButton:
+            id: go_results
             text: "Dalej"
-            pos: 0.45*root.width, 0.05*root.height
+            pos: 0.45 * root.width, 0.05 * root.height
             on_release: 
-                app.root.current = "second"
+                app.root.current = "results_screen"
                 root.manager.transition.direction = "left"
 
 
-<SecondWindow>:
-    name: "second"
-    id: second_screen
+<ResultsScreen>:
+    name: "results_screen"
+    id: results_screen
     FloatLayout:
         Label:
-            id: new_distance
             text: 'Dystans [km]'
             size_hint: 0.1, 0.05
-            pos: 0.1*root.width, 0.8*root.height
+            pos: 0.1 * root.width, 0.8 * root.height
 
         TextInput:
+            id: distance_input
             text: 'Podaj dystans'
-            padding_x: 0.15*self.width
+            padding_x: 0.15 * self.width
             multiline: False
             input_filter: 'float'
             on_focus: self.text = '' if args[1] else self.text
             size_hint: 0.15, 0.05
-            pos: 0.3*root.width, 0.8*root.height
+            pos: 0.3 * root.width, 0.8 * root.height
             background_color: 0, 0, 0, 1
             foreground_color: (1, 1, 1, 1)
 
         Label:
             text: 'Zmiana masy'
-            pos: 0.1*root.width, 0.7*root.height
+            pos: 0.1 * root.width, 0.7 * root.height
             size_hint: 0.1, 0.05
 
         Slider:
-            id: slider
+            id: weight_slider
             min: -5
             max: 5
             step: 0.5
             orientation: 'horizontal'
             size_hint: 0.4, 0.05
-            pos: 0.5*root.width, 0.7*root.height
+            pos: 0.5 * root.width, 0.7 * root.height
             cursor_image: './assets/runner.png'
 
         Label:
-            id: percent
-            text: str(slider.value) + ' %'
-            pos: 0.3*root.width, 0.7*root.height
+            id: weight_display
+            text: str(weight_slider.value) + ' %'
+            pos: 0.3 * root.width, 0.7 * root.height
             size_hint: 0.15, 0.05
             background_color: 0, 0, 0, 1
             canvas.before:
@@ -144,21 +144,22 @@ WindowManager:
                     size: self.size
 
         MyButton:
-            id: run
+            id: calculate_it
             text:'Oblicz'
-            pos: 0.45*root.width, 0.6*root.height
+            pos: 0.45 * root.width, 0.6 * root.height
 
         MyButton:
+            id: results_go_main
             text: "Powrót"
             size_hint: 0.1, 0.05
-            pos: 0.45*root.width, 0.05*root.height
+            pos: 0.45 * root.width, 0.05 * root.height
             on_release: 
-                app.root.current = "first"
+                app.root.current = "first_screen"
                 root.manager.transition.direction = "right"
 
         BoxLayout:
             orientacion: 'horizontal'
-            size: (0.6*root.width, 0.1*root.height)
+            size: (0.6 * root.width, 0.1 * root.height)
             size_hint: None, None
             pos: 0.2*root.width, 0.45*root.height
 
@@ -184,9 +185,9 @@ WindowManager:
         GridLayout:
             cols: 1
             rows: 1
-            size: (0.6*root.width, 0.25*root.height)
+            size: (0.6 * root.width, 0.25 * root.height)
             size_hint: None, None
-            pos: 0.2*root.width, 0.2*root.height
+            pos: 0.2 * root.width, 0.2 * root.height
             canvas.before:
                 Color:
                     rgba: 0, 0, 0, 0.3
@@ -199,20 +200,20 @@ WindowManager:
 
 
 
-<InfoWindow>:
-    name: "infopage"
-    id: infowindow
+<InfoScreen>:
+    name: "info_screen"
+    id: info_screen
     FloatLayout:
         Label:
-            id: info
+            id: info_label
             pos_hint: {'center': (.5, 0.8)}
             markup: True
             text: "[size=20][u]Instrukcja[/u][/size] \nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
 
         MyButton:
-            id: back_button
+            id: info_go_main
             text: "Powrót"
-            pos: 0.45*root.width, 0.05*root.height
+            pos: 0.45 * root.width, 0.05 * root.height
             on_release:
-                app.root.current = "first"
+                app.root.current = "first_screen"
  
