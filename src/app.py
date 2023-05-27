@@ -2,27 +2,10 @@ from pathlib import Path
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.label import Label
+
 
 from src.processing import DataHandler
-
-
-class FileInfo(Label):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.print_prompt()
-
-    def print_prompt(self):
-        self.color = (1, 1, 1)
-        self.text = "Wybierz plik z danymi z listy."
-
-    def print_success(self, filename):
-        self.color = (1, 1, 1)
-        self.text = f'Załadowano plik "{filename}".\nPoniżej wybierz kolumny z czasem i dystansem.'
-
-    def print_error(self, message):
-        self.color = (1, 0, 0)
-        self.text = f"BŁĄD: {message}.\nSpróbuj wybrać plik jeszcze raz."
+from src.assets import AssetPaths
 
 
 class MainScreen(Screen):
@@ -36,7 +19,7 @@ class MainScreen(Screen):
         else:
             # show an error
             pass
-    
+
     def choose_file(self, paths):
         self.data_handler.process_file(paths[0])
 
@@ -80,5 +63,6 @@ class WindowManager(ScreenManager):
 
 
 class KarczRunApp(App):
+    assets = AssetPaths()
     def build(self):
         return Builder.load_file(str(Path("src", "app.kv")))
