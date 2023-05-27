@@ -47,5 +47,5 @@ class MyApp(App):
 if __name__ == "__main__":
     # os.chdir()
     kv = Builder.load_file("layout.kv")
-    Window.size = (800, 500)
+    Window.size = (700, 500)
     MyApp().run()

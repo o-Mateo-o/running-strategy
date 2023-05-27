@@ -1,8 +1,7 @@
 WindowManager:
     MainScreen:
-    InfoScreen:
     ResultsScreen:
-    
+    InfoScreen:
 
 
 <MyButton@Button>:
@@ -43,11 +42,13 @@ WindowManager:
     name: "first_screen"
     id: first_screen
     FloatLayout:
+        padding: 100
         MyButton:
             id: go_info
             text: "Instrukcja"
             pos: 0.45 * root.width, 0.85 * root.height
             on_release:
+                root.manager.transition.direction = "right"
                 app.root.current = "info_screen"
 
         Label:
@@ -64,7 +65,8 @@ WindowManager:
         FileChooserListView:
             id: filechooser
             path: "data"
-            size_hint: 1, 0.65
+            size_hint_y: 0.65
+            height: 100
             on_selection: first_screen.selected(filechooser.selection)
 
         Label:
@@ -89,9 +91,9 @@ WindowManager:
             id: go_results
             text: "Dalej"
             pos: 0.45 * root.width, 0.05 * root.height
-            on_release: 
-                app.root.current = "results_screen"
+            on_release:
                 root.manager.transition.direction = "left"
+                app.root.current = "results_screen"
 
 
 <ResultsScreen>:
@@ -113,6 +115,7 @@ WindowManager:
             size_hint: 0.15, 0.05
             pos: 0.3 * root.width, 0.8 * root.height
             background_color: 0, 0, 0, 1
+            font_size: 17
             foreground_color: (1, 1, 1, 1)
 
         Label:
@@ -151,11 +154,11 @@ WindowManager:
         MyButton:
             id: results_go_main
             text: "Powrót"
-            size_hint: 0.1, 0.05
             pos: 0.45 * root.width, 0.05 * root.height
-            on_release: 
-                app.root.current = "first_screen"
+            on_release:
                 root.manager.transition.direction = "right"
+                app.root.current = "first_screen"
+                
 
         BoxLayout:
             orientacion: 'horizontal'
@@ -205,8 +208,8 @@ WindowManager:
     id: info_screen
     FloatLayout:
         Label:
-            id: info_label
             pos_hint: {'center': (.5, 0.8)}
+            multiline: True
             markup: True
             text: "[size=20][u]Instrukcja[/u][/size] \nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
 
@@ -215,5 +218,6 @@ WindowManager:
             text: "Powrót"
             pos: 0.45 * root.width, 0.05 * root.height
             on_release:
+                root.manager.transition.direction = "left"
                 app.root.current = "first_screen"
  
