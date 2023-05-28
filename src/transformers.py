@@ -10,7 +10,7 @@ class DistanceBounder:
             self.model_const = yaml.safe_load(f)
 
     def run(self) -> pd.DataFrame:
-        min_dist = self.model_const["max_distance"]
+        min_dist = self.model_const["min_distance"]
         max_dist = self.model_const["max_distance"]
         return self.df[(self.df["D"] >= min_dist) & (self.df["D"] <= max_dist)]
 

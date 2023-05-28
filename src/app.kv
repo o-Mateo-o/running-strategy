@@ -81,13 +81,13 @@ WindowManager:
             row_default_height: 0.08*root.height
     
             Label:
-                text: 'Kolumna dystansów:'
+                text: 'Kolumna dystansów [km]:'
             
             MySpinner:
                 id: spinner_distance
             
             Label:
-                text: 'Kolumna czasów:'
+                text: 'Kolumna czasów [s]:'
 
             MySpinner:
                 id: spinner_time
@@ -119,6 +119,11 @@ WindowManager:
 <ResultsScreen>:
     name: "results_screen"
     id: results_screen
+    on_touch_move: root.update_input()
+    on_touch_up: root.update_input()
+    on_enter:  self.update_input()
+    on_touch_up: root.show_predictions()
+    
     FloatLayout:
         Label:
             text: "Dystans"
@@ -138,10 +143,9 @@ WindowManager:
         #     font_size: 0.5*self.height
         #     foreground_color: (1, 1, 1, 1)
 
-        Slider:
+        DistanceSlider:
             id: distance_slider
-            min: 10
-            max: 300000
+            value: 50
             step: 0.01
             orientation: 'horizontal'
             size_hint: 0.45, 0.05
@@ -150,7 +154,7 @@ WindowManager:
 
         Label:
             id: distance_display
-            text: f"{distance_slider.value} m"
+            text: f"{int(distance_slider.real_value)} m"
             pos: 0.3 * root.width, 0.8 * root.height
             size_hint: 0.15, 0.05
             background_color: 0, 0, 0, 1
@@ -166,20 +170,19 @@ WindowManager:
             pos: 0.1 * root.width, 0.7 * root.height
             size_hint: 0.1, 0.05
 
-        Slider:
+        WeightSlider:
             id: weight_slider
-            min: -5
-            max: 5
-            step: 0.5
+            value: 50
+            step: 1
             orientation: 'horizontal'
             size_hint: 0.45, 0.05
             pos: 0.5 * root.width, 0.7 * root.height
             cursor_image: app.assets["weight_icon"]
-            on_touch_up: root.show_predictions()
+            
 
         Label:
             id: weight_display
-            text: str(weight_slider.value) + ' %'
+            text: f"{weight_slider.real_value} %"
             pos: 0.3 * root.width, 0.7 * root.height
             size_hint: 0.15, 0.05
             background_color: 0, 0, 0, 1

@@ -6,7 +6,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from typing import Any, Union
 from src.processing import DataHandler, ProcessingError
 from src.assets import AssetPaths
-from src.widgets import FileInfo, MySpinner
+from src.widgets import FileInfo, MySpinner, DistanceSlider, WeightSlider
 
 
 class MainScreen(Screen):
@@ -57,14 +57,22 @@ class ResultsScreen(Screen):
     def display_warning(self, msg: str) -> None:
         self.ids.result_warnings.text = msg
 
+    def update_input(self) -> None:
+        distance_raw = self.ids.distance_slider.real_value
+        if distance_raw < 1000:
+            self.ids.distance_display.text = f"{distance_raw:.0f} m"
+        else:
+            self.ids.distance_display.text = f"{(distance_raw / 1000):.1f} km"
+        self.ids.weight_display.text = f"{self.ids.weight_slider.real_value:.1f} %"
+
     def _prepare_prediction(self) -> bool:
         distance, weight_change = None, None
         try:
-            distance = float(self.ids.distance_slider.value)
+            distance = self.ids.distance_slider.value.real_value
         except:
             self.display_warning("Podano niepoprawny dystans")
         try:
-            weight_change = float(self.ids.weight_slider.value) / 100
+            weight_change = self.ids.weight_slider.real_value / 100
         except:
             self.display_warning("Podano niepoprawną zmianę masy")
         if distance != None and weight_change != None:
@@ -77,6 +85,7 @@ class ResultsScreen(Screen):
         if self.manager.current == "results_screen":
             result = self._prepare_prediction()
             self.ids.est_time.text = result
+
 
 class InfoScreen(Screen):
     pass
