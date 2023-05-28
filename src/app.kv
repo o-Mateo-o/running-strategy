@@ -60,6 +60,7 @@ WindowManager:
             path: "data"
             size_hint_y: None
             height: 0.3*root.height
+            font_name: 'Tahoma' 
             on_selection: main_screen.click_file(filechooser.selection)
 
         GridLayout:
@@ -67,7 +68,7 @@ WindowManager:
             rows: 1
             spacing: 20
             row_force_default: True
-            row_default_height: 0.1*root.height
+            row_default_height: 0.08*root.height
     
             Label:
                 text: 'Kolumna dystansów:'
@@ -241,16 +242,23 @@ WindowManager:
         orientation: 'vertical'
         padding: 50
         spacing: 50
+        adaptive_height: True
+        pos_hint: {'center_y':0.5}
+        
         Label:
             text_size: self.size
             multiline: True
             markup: True
             text: "[size=20][u]Instrukcja[/u][/size]\nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
 
-        MyButton:
-            id: info_go_main
-            text: "Powrót"
-            on_release:
-                root.manager.transition.direction = "left"
-                app.root.current = "main_screen"
+        AnchorLayout:
+            anchor_x: 'center'
+            anchor_y: 'bottom'
+            MyButton:
+                id: info_go_main
+                text: "Powrót"
+                size_hint: 0.25, 0.15
+                on_release:
+                    root.manager.transition.direction = "left"
+                    app.root.current = "main_screen"
  
