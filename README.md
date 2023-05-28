@@ -6,7 +6,7 @@
 
 __KarczRun__ to aplikacja przewidująca rekordy biegów na podstawie dostarczonych historycznych danych. Powstała ona w ramach projektu dotyczącego __strategii biegania__, podjętego na kursie Matematyka dla Przemysłu, W13 PWr.
 
-Użyta w aplikacji estymacja, opiera się na modelu Kellera. Na podstawie danych, zawierających czasy i dystansy biegów określonej osoby, jest ona w stanie określić jego możliwe rekordy dla żądanego dystansu i ewentualnej procentowej zmiany masy ciała zawodnika.
+Użyta w aplikacji estymacja, opiera się na modelu Kellera, a właściwie jego aproksymacji na konkretnych przedziałach dystansów. Na podstawie danych, zawierających czasy i dystansy biegów określonej osoby, jest ona w stanie określić jego możliwe rekordy dla żądanego dystansu i ewentualnej procentowej zmiany masy ciała zawodnika.
 
 Przygotowanie projektu wymagało szeregu analiz i implementacji odpowiednich metod, a ostatecznie z połączenia tych części powstał przyjazny użytkownikowi program.
 
