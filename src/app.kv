@@ -8,7 +8,7 @@ WindowManager:
     font_name: 'Tahoma'
     font_size: 0.5 * self.height
     background_color: 0, 0, 0, 0
-    size_hint: 0.1, 0.05
+    size_hint: 0.11, 0.06
     canvas.before:
         Color:
             rgba: 0, 0, 0, 1
@@ -98,22 +98,45 @@ WindowManager:
     id: results_screen
     FloatLayout:
         Label:
-            text: 'Dystans [km]'
+            text: 'Dystans [m]'
             size_hint: 0.1, 0.05
             pos: 0.1 * root.width, 0.8 * root.height
 
-        TextInput:
+        # TextInput:
+        #     id: distance_input
+        #     text: 'Podaj dystans'
+        #     padding_x: 0.15 * self.width
+        #     multiline: False
+        #     input_filter: 'float'
+        #     on_focus: self.text = '' if args[1] else self.text
+        #     size_hint: 0.15, 0.05
+        #     pos: 0.3 * root.width, 0.8 * root.height
+        #     background_color: 0, 0, 0, 1
+        #     font_size: 0.5*self.height
+        #     foreground_color: (1, 1, 1, 1)
+
+        Slider:
+            id: distance_slider
+            min: 10
+            max: 300000
+            step: 0.5
+            orientation: 'horizontal'
+            size_hint: 0.45, 0.05
+            pos: 0.5 * root.width, 0.8 * root.height
+            cursor_image: app.assets["runner_icon"]
+
+        Label:
             id: distance_input
-            text: 'Podaj dystans'
-            padding_x: 0.15 * self.width
-            multiline: False
-            input_filter: 'float'
-            on_focus: self.text = '' if args[1] else self.text
-            size_hint: 0.15, 0.05
+            text: str(distance_slider.value)
             pos: 0.3 * root.width, 0.8 * root.height
+            size_hint: 0.15, 0.05
             background_color: 0, 0, 0, 1
-            font_size: 17
-            foreground_color: (1, 1, 1, 1)
+            canvas.before:
+                Color:
+                    rgba: self.background_color
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
         Label:
             text: 'Zmiana masy'
@@ -126,9 +149,9 @@ WindowManager:
             max: 5
             step: 0.5
             orientation: 'horizontal'
-            size_hint: 0.4, 0.05
+            size_hint: 0.45, 0.05
             pos: 0.5 * root.width, 0.7 * root.height
-            cursor_image: app.assets["runner_icon"]
+            cursor_image: app.assets["weight_icon"]
             on_touch_up: root.show_predictions()
 
         Label:
@@ -202,17 +225,19 @@ WindowManager:
 <InfoScreen>:
     name: "info_screen"
     id: info_screen
-    FloatLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 50
         Label:
-            pos_hint: {'center': (.5, 0.8)}
+            text_size: self.size
             multiline: True
             markup: True
-            text: "[size=20][u]Instrukcja[/u][/size] \nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
+            text: "[size=20][u]Instrukcja[/u][/size]\nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
 
         MyButton:
             id: info_go_main
             text: "Powrót"
-            pos: 0.45 * root.width, 0.05 * root.height
             on_release:
                 root.manager.transition.direction = "left"
                 app.root.current = "main_screen"
