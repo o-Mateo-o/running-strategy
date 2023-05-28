@@ -129,6 +129,7 @@ WindowManager:
             size_hint: 0.4, 0.05
             pos: 0.5 * root.width, 0.7 * root.height
             cursor_image: app.assets["runner_icon"]
+            on_touch_up: root.show_predictions()
 
         Label:
             id: weight_display
@@ -142,11 +143,8 @@ WindowManager:
                 Rectangle:
                     pos: self.pos
                     size: self.size
-
-        MyButton:
-            id: calculate_it
-            text:'Oblicz'
-            pos: 0.45 * root.width, 0.6 * root.height
+        
+        # No "Oblicz" button. Calculations done automatically!
 
         MyButton:
             id: results_go_main
@@ -158,13 +156,13 @@ WindowManager:
                 
 
         BoxLayout:
-            orientacion: 'horizontal'
+            orientacion: "horizontal"
             size: (0.6 * root.width, 0.1 * root.height)
             size_hint: None, None
             pos: 0.2*root.width, 0.45*root.height
 
             Label:
-                text: 'Prognozowany czas:'
+                text: "Prognozowany czas:"
                 canvas.before:
                     Color:
                         rgba: 0, 0, 0, 1
@@ -174,7 +172,7 @@ WindowManager:
 
             Label:
                 id: est_time
-                text: 'Tu będzie wynik'
+                text: "---"
                 canvas.before:
                     Color:
                         rgba: 0, 0, 0, 1
@@ -195,6 +193,7 @@ WindowManager:
                     pos: self.pos
                     size: self.size
             Label:
+                id: result_warnings
                 multiline: True
                 text: 'Ewentualne błędy/ostrzeżenia.'         
 

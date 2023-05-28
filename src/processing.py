@@ -1,8 +1,10 @@
 import pandas as pd
 import re
 import numpy as np
-import yaml
-from pathlib import Path
+from typing import Union
+
+from src.transformers import DistanceBounder, RecordChooser, QualityAssessor, Predictor
+
 
 class ProcessingError(Exception):
     ...
@@ -13,6 +15,7 @@ class DataHandler:
         self.df_raw = None
         self.df_working = None
         self.data_quality = [0, 0, 0]
+        self.model = dict()
 
     @property
     def cols(self) -> np.ndarray:
@@ -37,10 +40,18 @@ class DataHandler:
         data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t)
         self.df_working, self.data_quality = data_preprocessor.run()
 
+    def estim_model_params(self) -> None:
+        # self.model = ...
+        pass
+
+    def predict(self, distance, weight_change) -> Union[float, None]:
+        return Predictor(self.model).predict(distance, weight_change)
+
     def reset_data(self) -> None:
         self.df_raw = None
         self.df_working = None
         self.data_quality = [0, 0, 0]
+        self.model = dict()
 
 
 class DataPreprocessor:
@@ -54,34 +65,38 @@ class DataPreprocessor:
         if not isinstance(self.df, pd.DataFrame):
             raise ProcessingError("Nie wybrano zestawu danych")
         if self.df.empty:
-            return ProcessingError("Zestaw danych jest pusty")
+            raise ProcessingError("Zestaw danych jest pusty")
 
     def _subset(self) -> None:
         try:
             self.df = self.df[[self.col_d, self.col_t]]
         except KeyError:
-            return ProcessingError("Nie znaleziono wybranej kolumny w zestawie danych")
+            raise ProcessingError("Niepoprawnie wybrane kolumny")
+        self.df.columns = ["D", "T"]
 
     def _cleanse(self) -> None:
-        self.df.dropna(inplace=True)
+        self.df = self.df.dropna()
 
     def _floatify(self) -> None:
-        # TODO: WRITE IT
-        pass
+        data_types = self.df.applymap(lambda x: isinstance(x, (int, float, str)))
+        if not data_types.all().all():
+            raise ProcessingError("Wybrane dane mają nieprawidłowy format")
+        try:
+            self.df = self.df.applymap(float)
+        except (TypeError, ValueError):
+            raise ProcessingError("Wybrane dane nie mogą być traktowane jako liczby")
 
     def _bound(self) -> None:
-        with open(Path("config", "ranges.yml"), 'r') as f:
-            model_const = yaml.safe_load(f)
-
-        # TODO: WRITE IT
+        self.df = DistanceBounder(self.df).run()
 
     def _keep_records(self) -> None:
-        # TODO: WRITE IT
-        pass
+        self.df = RecordChooser(self.df).run()
 
     def _assess_quality(self) -> None:
-        # TODO: WRITE IT
-        pass
+        penalties = QualityAssessor(self.df).run()
+        self.data_quality = [
+            max(0, dq - p) for (dq, p) in zip(self.data_quality, penalties)
+        ]
 
     def _approve_quality(self) -> None:
         if not any([q > 0 for q in self.data_quality]):
@@ -93,6 +108,7 @@ class DataPreprocessor:
         self._validate_format()
         self._subset()
         self._cleanse()
+        self._floatify()
         self._bound()
         self._keep_records()
         self._assess_quality()

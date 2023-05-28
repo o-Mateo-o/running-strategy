@@ -1,12 +1,12 @@
 short:
   direction: "asc"
-  optimal: 0
-  extended: 0
+  optimal: 200
+  extended: 550
 mid:
   direction: "asc"
-  optimal: 0
-  extended: 0
+  optimal: 10_000
+  extended: 14_000
 long:
   direction: "desc"
-  optimal: 0 
-  extended: 0
+  optimal: 10_000
+  extended: 8_000
