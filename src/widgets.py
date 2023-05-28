@@ -1,5 +1,6 @@
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
+from kivy.uix.label import Label
 
 
 class FileInfo(Label):
@@ -27,5 +28,5 @@ class MySpinner(Spinner):
         self.reset()
 
     def reset(self) -> None:
-        self.text = "<rozwiń>"
+        self.text = "- rozwiń -"
         self.values = []

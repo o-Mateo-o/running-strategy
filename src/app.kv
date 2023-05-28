@@ -6,7 +6,7 @@ WindowManager:
 
 <MyButton@Button>:
     font_name: 'Tahoma'
-    font_size: 0.5 * self.height
+    # font_size: 0.5 * self.height
     background_color: 0, 0, 0, 0
     size_hint: 0.11, 0.06
     canvas.before:
@@ -19,17 +19,25 @@ WindowManager:
 
 
 <Label>:
+    halign: 'center'
     font_name: 'Tahoma'
-    font_size: 17
 
 
 <MySpinner>:
-    #size_hint: None, None
-    #size: 100, 40
     background_color: 0, 0, 0, 1
 
 
-<FloatLayout>:
+<Screen>:
+    canvas.before:
+        Color:
+            rgba: 0.188, 0.851, 0.396, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<ScreenManager>:
+    canvas.before:
+        
     canvas.before:
         Color:
             rgba: 0.188, 0.851, 0.396, 1
@@ -38,7 +46,9 @@ WindowManager:
             size: self.size
 
 
+
 <MainScreen>:
+
     name: "main_screen"
     id: main_screen
     BoxLayout:
@@ -54,7 +64,7 @@ WindowManager:
             id: file_info
             size_hint: 1, 0.1
             multiline: True
-
+        
         FileChooserIconView:
             id: filechooser
             path: "data"
@@ -92,7 +102,7 @@ WindowManager:
             MyButton:
                 id: go_info
                 text: "Instrukcja"
-                #pos: 0.25 * root.width, 0.05 * root.height
+                pos: 0.25 * root.width, 0.05 * root.height
                 on_release:
                     root.manager.transition.direction = "right"
                     app.root.current = "info_screen"
@@ -100,7 +110,7 @@ WindowManager:
             MyButton:
                 id: go_results
                 text: "Dalej"
-                #pos: 0.65 * root.width, 0.05 * root.height
+                pos: 0.65 * root.width, 0.05 * root.height
                 on_release:
                     root.manager.transition.direction = "left"
                     main_screen.go_results_action()
@@ -111,7 +121,7 @@ WindowManager:
     id: results_screen
     FloatLayout:
         Label:
-            text: 'Dystans [m]'
+            text: "Dystans"
             size_hint: 0.1, 0.05
             pos: 0.1 * root.width, 0.8 * root.height
 
@@ -132,15 +142,15 @@ WindowManager:
             id: distance_slider
             min: 10
             max: 300000
-            step: 0.5
+            step: 0.01
             orientation: 'horizontal'
             size_hint: 0.45, 0.05
             pos: 0.5 * root.width, 0.8 * root.height
             cursor_image: app.assets["runner_icon"]
 
         Label:
-            id: distance_input
-            text: str(distance_slider.value)
+            id: distance_display
+            text: f"{distance_slider.value} m"
             pos: 0.3 * root.width, 0.8 * root.height
             size_hint: 0.15, 0.05
             background_color: 0, 0, 0, 1
@@ -179,8 +189,6 @@ WindowManager:
                 Rectangle:
                     pos: self.pos
                     size: self.size
-        
-        # No "Oblicz" button. Calculations done automatically!
 
         MyButton:
             id: results_go_main
@@ -222,16 +230,16 @@ WindowManager:
             size: (0.6 * root.width, 0.25 * root.height)
             size_hint: None, None
             pos: 0.2 * root.width, 0.2 * root.height
-            canvas.before:
-                Color:
-                    rgba: 0, 0, 0, 0.3
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+            # canvas.before:
+            #     Color:
+            #         rgba: 0, 0, 0, 0.3
+            #     Rectangle:
+            #         pos: self.pos
+            #         size: self.size
             Label:
                 id: result_warnings
                 multiline: True
-                text: 'Ewentualne błędy/ostrzeżenia.'         
+                text: "asd"        
 
 
 
@@ -249,7 +257,7 @@ WindowManager:
             text_size: self.size
             multiline: True
             markup: True
-            text: "[size=20][u]Instrukcja[/u][/size]\nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
+            text: "[u]Instrukcja[/u]\nPo wybraniu pliku csv można rozwinąć listę z nazwami kolumn i wybrać odpowiednie dla czasu i dystansu."
 
         AnchorLayout:
             anchor_x: 'center'

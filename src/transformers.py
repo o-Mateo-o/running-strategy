@@ -45,6 +45,6 @@ class Predictor:
     def predict(self, distance: float, weight_change: float) -> float:
         weight_factor = 1 / (1 + weight_change)
         # TODO: TRY and in case of key error handle somehow
-        self.altered_model["sg"] = self.altered_model["sg"] * weight_factor
-        self.altered_model["F"] = self.altered_model["F"] * weight_factor
-        return self.get_time(distance)
+        # self.altered_model["sg"] = self.altered_model["sg"] * weight_factor
+        # self.altered_model["F"] = self.altered_model["F"] * weight_factor
+        # return self.get_time(distance)
