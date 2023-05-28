@@ -60,7 +60,7 @@ class ResultsScreen(Screen):
     def _prepare_prediction(self) -> bool:
         distance, weight_change = None, None
         try:
-            distance = float(self.ids.distance_input.text)
+            distance = float(self.ids.distance_slider.value)
         except:
             self.display_warning("Podano niepoprawny dystans")
         try:
