@@ -65,30 +65,17 @@ class ResultsScreen(Screen):
             self.ids.distance_display.text = f"{(distance_raw / 1000):.1f} km"
         self.ids.weight_display.text = f"{self.ids.weight_slider.real_value:.1f} %"
 
-    def _prepare_prediction(self) -> bool:
-        distance, weight_change = None, None
-        try:
-            distance = self.ids.distance_slider.value.real_value
-        except:
-            self.display_warning("Podano niepoprawny dystans")
-        try:
-            weight_change = self.ids.weight_slider.real_value / 100
-        except:
-            self.display_warning("Podano niepoprawną zmianę masy")
-        if distance != None and weight_change != None:
-            prediction = self.data_handler.predict(distance, weight_change)
-            return str(prediction)
-        else:
-            return "---"
-
     def show_predictions(self) -> None:
         if self.manager.current == "results_screen":
-            result = self._prepare_prediction()
-            self.ids.est_time.text = result
+            distance = self.ids.distance_slider.real_value
+            weight_change_v = self.ids.weight_slider.real_value / 100
+            prediction = self.data_handler.predict(distance, weight_change_v)
+            self.ids.est_time.text = "---" if prediction == None else str(prediction)
+            self.display_warning("")
 
 
 class InfoScreen(Screen):
-    pass
+    ...
 
 
 class WindowManager(ScreenManager):
