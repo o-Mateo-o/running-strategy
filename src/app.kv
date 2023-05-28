@@ -24,8 +24,8 @@ WindowManager:
 
 
 <MySpinner>:
-    size_hint: None, None
-    size: 100, 44
+    #size_hint: None, None
+    #size: 100, 40
     background_color: 0, 0, 0, 1
 
 
@@ -41,56 +41,68 @@ WindowManager:
 <MainScreen>:
     name: "main_screen"
     id: main_screen
-    FloatLayout:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 30
+
         Label:
             text: "LOGO APLIKACJI"
             size_hint: 1 , 0.1
-            pos: 0, 0.9 * root.height
 
         FileInfo:
             id: file_info
             size_hint: 1, 0.1
             multiline: True
-            pos: 0, 0.75 * root.height
 
         FileChooserIconView:
             id: filechooser
             path: "data"
-            size_hint_y: 0.65
-            height: 100
+            size_hint_y: None
+            height: 0.3*root.height
             on_selection: main_screen.click_file(filechooser.selection)
 
-        Label:
-            text: 'Kolumna dystansów:'
-            pos_hint: {'center': (.2, .7)}
-        
-        MySpinner:
-            id: spinner_distance
-            pos_hint: {'center': (.3, .7)}
-        
-        Label:
-            text: 'Kolumna czasów:'
-            pos_hint: {'center': (.6, .7)}
+        GridLayout:
+            cols: 4
+            rows: 1
+            spacing: 20
+            row_force_default: True
+            row_default_height: 0.1*root.height
+    
+            Label:
+                text: 'Kolumna dystansów:'
+            
+            MySpinner:
+                id: spinner_distance
+            
+            Label:
+                text: 'Kolumna czasów:'
 
-        MySpinner:
-            id: spinner_time
-            pos_hint: {'center': (.7, .7)}
+            MySpinner:
+                id: spinner_time
         
-        MyButton:
-            id: go_info
-            text: "Instrukcja"
-            pos: 0.25 * root.width, 0.05 * root.height
-            on_release:
-                root.manager.transition.direction = "right"
-                app.root.current = "info_screen"
+        GridLayout:
+            cols:2
+            rows: 1
+            spacing: 100
+            padding: 50
+            row_force_default: True
+            row_default_height: 0.05*root.height
+            MyButton:
+                id: go_info
+                text: "Instrukcja"
+                #pos: 0.25 * root.width, 0.05 * root.height
+                on_release:
+                    root.manager.transition.direction = "right"
+                    app.root.current = "info_screen"
 
-        MyButton:
-            id: go_results
-            text: "Dalej"
-            pos: 0.65 * root.width, 0.05 * root.height
-            on_release:
-                root.manager.transition.direction = "left"
-                main_screen.go_results_action()
+            MyButton:
+                id: go_results
+                text: "Dalej"
+                #pos: 0.65 * root.width, 0.05 * root.height
+                on_release:
+                    root.manager.transition.direction = "left"
+                    main_screen.go_results_action()
 
 
 <ResultsScreen>:
