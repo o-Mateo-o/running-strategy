@@ -8,7 +8,7 @@ WindowManager:
     font_name: 'Tahoma'
     # font_size: 0.5 * self.height
     background_color: 0, 0, 0, 0
-    size_hint: 0.11, 0.06
+    size_hint: 0.15, 0.06
     canvas.before:
         Color:
             rgba: 0, 0, 0, 1
@@ -30,17 +30,17 @@ WindowManager:
 <Screen>:
     canvas.before:
         Color:
-            rgba: 0.188, 0.851, 0.396, 1
+            rgba: 0.055, 0.8, 0.302, 1
         Rectangle:
             pos: self.pos
             size: self.size
 
 <ScreenManager>:
-    canvas.before:
+    #canvas.before:
         
     canvas.before:
         Color:
-            rgba: 0.188, 0.851, 0.396, 1
+            rgba: 0.055, 0.8, 0.302, 1
         Rectangle:
             pos: self.pos
             size: self.size
@@ -130,19 +130,6 @@ WindowManager:
             size_hint: 0.1, 0.05
             pos: 0.1 * root.width, 0.8 * root.height
 
-        # TextInput:
-        #     id: distance_input
-        #     text: 'Podaj dystans'
-        #     padding_x: 0.15 * self.width
-        #     multiline: False
-        #     input_filter: 'float'
-        #     on_focus: self.text = '' if args[1] else self.text
-        #     size_hint: 0.15, 0.05
-        #     pos: 0.3 * root.width, 0.8 * root.height
-        #     background_color: 0, 0, 0, 1
-        #     font_size: 0.5*self.height
-        #     foreground_color: (1, 1, 1, 1)
-
         DistanceSlider:
             id: distance_slider
             value: 50
@@ -196,7 +183,7 @@ WindowManager:
         MyButton:
             id: results_go_main
             text: "Powrót"
-            pos: 0.45 * root.width, 0.05 * root.height
+            pos: 0.4 * root.width, 0.05 * root.height
             on_release:
                 root.manager.transition.direction = "right"
                 app.root.current = "main_screen"
