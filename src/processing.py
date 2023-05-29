@@ -4,7 +4,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from src.transformers import DistanceBounder, Predictor, QualityAssessor, RecordChooser
+from src.transformers import DistanceBounder, QualityAssessor, RecordChooser
 
 
 class ProcessingError(Exception):
@@ -39,14 +39,17 @@ class DataHandler:
 
     def preprocess_data(self, col_d: str, col_t: str) -> None:
         data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t)
-        self.df_working, self.data_quality = data_preprocessor.run()
+        self.df_working, self.data_quality = data_preprocessor.process()
 
     def estim_model_params(self) -> None:
-        # self.model = ...
-        pass
+        self.model = KellerFitter(self.df_working).fit()
 
     def predict(self, distance, weight_change) -> Union[float, None]:
-        return Predictor(self.model).predict(distance, weight_change)
+        est_time, quality_warning_level = Predictor(self.model).predict(
+            distance, weight_change
+        )
+        quality_warning = ""
+        return est_time, quality_warning
 
     def reset_data(self) -> None:
         self.df_raw = None
@@ -89,13 +92,13 @@ class DataPreprocessor:
             raise ProcessingError("Wybrane dane nie mogą być traktowane jako liczby")
 
     def _bound(self) -> None:
-        self.df = DistanceBounder(self.df).run()
+        self.df = DistanceBounder(self.df).bound()
 
     def _keep_records(self) -> None:
-        self.df = RecordChooser(self.df).run()
+        self.df = RecordChooser(self.df).cleanse()
 
     def _assess_quality(self) -> None:
-        penalties = QualityAssessor(self.df).run()
+        penalties = QualityAssessor(self.df).assess()
         self.data_quality = [
             max(0, dq - p) for (dq, p) in zip(self.data_quality, penalties)
         ]
@@ -106,7 +109,7 @@ class DataPreprocessor:
                 "Niezidentyfikowane błędy w danych uniemożliwiają kalkulacje"
             )
 
-    def run(self) -> tuple:
+    def process(self) -> tuple:
         self._validate_format()
         self._subset()
         self._cleanse()
@@ -116,3 +119,44 @@ class DataPreprocessor:
         self._assess_quality()
         self._approve_quality()
         return self.df, self.data_quality
+
+
+class KellerFitter:
+    def __init__(self, df: pd.DataFrame) -> None:
+        self.df = df
+
+    def fit(self) -> dict:
+        # 1. divide data into groups (with extensions)
+        # - might be done by an external transformer
+        # 2. for each sector if quality > 0:
+        # - estimate params by fitting and save them
+        # - if needed use them
+        # - if the model wants to use the args estimated before but cannot find them
+        # raise an error
+        return {
+            "E0": 0,
+            "sigma": 0,
+            "tau": 0,
+            "F": 0,
+            "gamma": 0,
+        }
+
+
+class Predictor:
+    def __init__(self, model: dict) -> None:
+        self.model = model
+        self.altered_model = self.model.copy()
+
+    def get_time(self, distance: float) -> float:
+        # TODO: WRITE CONDITIONS AND MODEL
+        # 1. determine an estimation sector with the optimal range bounds
+        # 2. using the model and params get the time (range switch)
+        # 3. return the quality warning level and the time
+        return None
+
+    def predict(self, distance: float, weight_change: float) -> float:
+        weight_factor = 1 / (1 + weight_change)
+        # TODO: TRY and in case of key error handle somehow
+        self.altered_model["sigma"] = self.altered_model["sigma"] * weight_factor
+        self.altered_model["F"] = self.altered_model["F"] * weight_factor
+        return self.get_time(distance), 0

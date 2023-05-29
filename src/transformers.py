@@ -11,7 +11,7 @@ class DistanceBounder:
         with open(Path("config", "model_const.yml"), "r") as f:
             self.model_const = yaml.safe_load(f)
 
-    def run(self, bounds: tuple = tuple()) -> pd.DataFrame:
+    def bound(self, bounds: tuple = tuple()) -> pd.DataFrame:
         if bounds:
             min_dist = bounds[0]
             max_dist = bounds[1]
@@ -36,7 +36,7 @@ class RecordChooser:
         else:
             return np.round(distance)
 
-    def run(self) -> pd.DataFrame:
+    def cleanse(self) -> pd.DataFrame:
         self.df["D_categ"] = self.df["D"].apply(self.categorizer)
         self.df = self.df.sort_values("T")
         return self.df.drop_duplicates("D_categ", keep="last")
@@ -75,24 +75,24 @@ class QualityAssessor:
         upper_ext = self._range_value(curr_sector, "extended")
 
         if (
-            DistanceBounder(self.df).run((lower_opt, upper_opt)).shape[0]
+            DistanceBounder(self.df).bound((lower_opt, upper_opt)).shape[0]
             >= self.model_const["required_points"][curr_sector]["reliable"]
         ):
             return [0, 0, 0]
         elif (
-            DistanceBounder(self.df).run((lower_opt, upper_opt)).shape[0]
+            DistanceBounder(self.df).bound((lower_opt, upper_opt)).shape[0]
             >= self.model_const["required_points"][curr_sector]["min"]
         ):
             return [1 if ix == sector_ix else 0 for ix in range(1, 4)]
         elif (
-            DistanceBounder(self.df).run((lower_opt, upper_ext)).shape[0]
+            DistanceBounder(self.df).bound((lower_opt, upper_ext)).shape[0]
             >= self.model_const["required_points"][curr_sector]["min"]
         ):
             [self._extension_decision(ix, sector_ix) for ix in range(1, 4)]
         else:
             return [3 if ix >= sector_ix else 0 for ix in range(1, 4)]
 
-    def run(self) -> list:
+    def assess(self) -> list:
         sector_penalties = {
             self.sectors[sector_ix]: self.test_sector(sector_ix)
             for sector_ix in range(1, 4)
@@ -105,20 +105,3 @@ class QualityAssessor:
             for i in range(3)
         ]
         return penalties
-
-
-class Predictor:
-    def __init__(self, model: dict) -> None:
-        self.model = model
-        self.altered_model = self.model.copy()
-
-    def get_time(self, distance: float) -> float:
-        # TODO: WRITE CONDITIONS AND MODEL
-        return None
-
-    def predict(self, distance: float, weight_change: float) -> float:
-        weight_factor = 1 / (1 + weight_change)
-        # TODO: TRY and in case of key error handle somehow
-        # self.altered_model["sg"] = self.altered_model["sg"] * weight_factor
-        # self.altered_model["F"] = self.altered_model["F"] * weight_factor
-        # return self.get_time(distance)

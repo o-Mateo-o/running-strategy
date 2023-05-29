@@ -70,9 +70,9 @@ class ResultsScreen(Screen):
         if self.manager.current == "results_screen":
             distance = self.ids.distance_slider.real_value
             weight_change_v = self.ids.weight_slider.real_value / 100
-            prediction = self.data_handler.predict(distance, weight_change_v)
+            prediction, warning = self.data_handler.predict(distance, weight_change_v)
             self.ids.est_time.text = "---" if prediction == None else str(prediction)
-            self.display_warning("")
+            self.display_warning(warning)
 
 
 class InfoScreen(Screen):
