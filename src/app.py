@@ -4,6 +4,7 @@ from typing import Any, Union
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen, ScreenManager
+from numpy import NAN
 
 from src.assets import AssetPaths
 from src.processing import DataHandler, ProcessingError
@@ -68,7 +69,7 @@ class ResultsScreen(Screen):
 
     @staticmethod
     def format_time(total_seconds: Union[int, float, None]) -> str:
-        if total_seconds == None:
+        if total_seconds == None or total_seconds == NAN:
             return "---"
         m, s = divmod(total_seconds, 60)
         h, m = divmod(m, 60)
