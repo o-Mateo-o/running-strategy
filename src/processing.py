@@ -44,11 +44,24 @@ class DataHandler:
     def estim_model_params(self) -> None:
         self.model = KellerFitter(self.df_working).fit()
 
+    @staticmethod
+    def describe_quality(quality_warning_level: int) -> str:
+        if quality_warning_level >= 3:
+            return ""
+        elif quality_warning_level == 2:
+            return "Z powodu niewielkiej ilości danych, wyniki mogą być obciążone delikatnymi niedokładnościami"
+        elif quality_warning_level == 1:
+            return "Z powodu małych ilości danych na pewnych przedziałach, wynik może być mało wiarygodny"
+        else:
+            return "Nie można przewidywać wyniku dla tego dystansu z powodu braku danych"
+
+        
+
     def predict(self, distance, weight_change) -> Union[float, None]:
         est_time, quality_warning_level = Predictor(self.model).predict(
             distance, weight_change
         )
-        quality_warning = ""
+        quality_warning = self.describe_quality(quality_warning_level)
         return est_time, quality_warning
 
     def reset_data(self) -> None:
@@ -152,6 +165,8 @@ class Predictor:
         # 1. determine an estimation sector with the optimal range bounds
         # 2. using the model and params get the time (range switch)
         # 3. return the quality warning level and the time
+
+        # ! if the sector quality is <= 0, return null
         return None
 
     def predict(self, distance: float, weight_change: float) -> float:
@@ -159,4 +174,4 @@ class Predictor:
         # TODO: TRY and in case of key error handle somehow
         self.altered_model["sigma"] = self.altered_model["sigma"] * weight_factor
         self.altered_model["F"] = self.altered_model["F"] * weight_factor
-        return self.get_time(distance), 0
+        return self.get_time(distance), 3
