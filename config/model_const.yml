@@ -1,5 +1,5 @@
 min_distance: 10
-max_distance: 300_000
+max_distance: 300000
 required_points:
   short:
     min: 5

@@ -1,0 +1,9 @@
+short:
+  optimal: 200
+  extended: 550
+mid:
+  optimal: 10000
+  extended: 14000
+long:
+  optimal: null
+  extended: null

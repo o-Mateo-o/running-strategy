@@ -55,6 +55,7 @@ class DataHandler:
 
 
 class DataPreprocessor:
+    # ! DATA UNITS MUST BE [KM] AND [SEC]
     def __init__(self, df: pd.DataFrame, col_d: str, col_t: str) -> None:
         self.df = df
         self.col_d = col_d
