@@ -60,10 +60,10 @@ class ResultsScreen(Screen):
 
     def update_input(self) -> None:
         distance_raw = self.ids.distance_slider.real_value
-        if distance_raw < 1000:
-            self.ids.distance_display.text = f"{distance_raw:.0f} m"
+        if distance_raw < 1:
+            self.ids.distance_display.text = f"{(distance_raw * 1000):.0f} m"
         else:
-            self.ids.distance_display.text = f"{(distance_raw / 1000):.1f} km"
+            self.ids.distance_display.text = f"{distance_raw:.1f} km"
         self.ids.weight_display.text = f"{self.ids.weight_slider.real_value:.1f} %"
 
     def show_predictions(self) -> None:

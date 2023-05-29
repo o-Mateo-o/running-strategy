@@ -88,7 +88,7 @@ class QualityAssessor:
             DistanceBounder(self.df).bound((lower_opt, upper_ext)).shape[0]
             >= self.model_const["required_points"][curr_sector]["min"]
         ):
-            [self._extension_decision(ix, sector_ix) for ix in range(1, 4)]
+            return [self._extension_decision(ix, sector_ix) for ix in range(1, 4)]
         else:
             return [3 if ix >= sector_ix else 0 for ix in range(1, 4)]
 
@@ -97,6 +97,7 @@ class QualityAssessor:
             self.sectors[sector_ix]: self.test_sector(sector_ix)
             for sector_ix in range(1, 4)
         }
+        print(sector_penalties)
         # List of penalties based on the partial penalties evaluated on each section
         penalties = [
             sector_penalties["short"][i]
