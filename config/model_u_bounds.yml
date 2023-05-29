@@ -5,5 +5,5 @@ mid:
   optimal: 10000
   extended: 14000
 long:
-  optimal: null
+  optimal: 300000
   extended: null

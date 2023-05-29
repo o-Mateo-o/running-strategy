@@ -1,8 +1,10 @@
 import re
+from pathlib import Path
 from typing import Union
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from src.model import ExtendedKellerApproxModel as formulas
 from src.transformers import DistanceBounder, QualityAssessor, RecordChooser
@@ -59,10 +61,16 @@ class DataHandler:
             )
 
     def predict(self, distance, weight_change) -> Union[float, None]:
-        est_time, quality_warning_level = Predictor(self.model).predict(
-            distance, weight_change
-        )
-        quality_warning = self.describe_quality(quality_warning_level)
+        est_time = None
+        try:
+            est_time, quality_warning_level = Predictor(
+                self.model, self.data_quality
+            ).predict(distance, weight_change)
+            quality_warning = self.describe_quality(quality_warning_level)
+        except ProcessingError as msg:
+            quality_warning = msg
+        except KeyError:
+            quality_warning = "Z powodu niekompletnego modelu nie można dokonać predykcji" 
         return est_time, quality_warning
 
     def reset_data(self) -> None:
@@ -157,22 +165,77 @@ class KellerFitter:
 
 
 class Predictor:
-    def __init__(self, model: dict) -> None:
+    def __init__(self, model: dict, data_quality: list) -> None:
         self.model = model
+        self.sector_qualites = {
+            "short": data_quality[0],
+            "mid": data_quality[1],
+            "long": data_quality[2],
+        }
         self.altered_model = self.model.copy()
+        self.limits = self.get_config_limits()
 
-    def get_time(self, distance: float) -> float:
-        # TODO: WRITE CONDITIONS AND MODEL
-        # 1. determine an estimation sector with the optimal range bounds
-        # 2. using the model and params get the time (range switch)
-        # 3. return the quality warning level and the time
+    @staticmethod
+    def get_config_limits() -> list:
+        with open(Path("config", "model_u_bounds.yml"), "r") as f:
+            model_u_bounds = yaml.safe_load(f)
+        with open(Path("config", "model_const.yml"), "r") as f:
+            model_const = yaml.safe_load(f)
+        bound_limits = [model_u_bounds[kind]["optimal"] for kind in ["short", "mid"]]
+        return (
+            [model_const["min_distance"]] + bound_limits + [model_const["max_distance"]]
+        )
 
-        # ! if the sector quality is <= 0, return null
-        return None
+    def evaluate_sector(self, distance: float) -> int:
+        lower_checks = [distance >= lim for lim in self.limits]
+        upper_checks = [distance < lim for lim in self.limits]
+        in_sector_check = [l and u for l, u in zip(lower_checks[:-1], upper_checks[1:])]
+        try:
+            ix = in_sector_check.index(True)
+        except ValueError:
+            ix = None
+        sector_names = {
+            0: "short",
+            1: "mid",
+            2: "long",
+            None: "none",
+        }
+        return sector_names[ix]
+
+    def predict_simple(self, distance: float) -> float:
+        sector = self.evaluate_sector(distance)
+        if sector == "none":
+            raise ProcessingError("Wartość dystansu jest spoza dozwolonego zakresu")
+        else:
+            quality = self.sector_qualites[sector]
+
+        if sector == "short" and quality > 0:
+            time = formulas.short(distance, self.model["tau"], self.model["F"])
+        elif sector == "mid" and quality > 0:
+            time = formulas.mid(
+                distance,
+                self.model["E0"],
+                self.model["sigma"],
+                self.model["tau"],
+                self.model["F"],
+            )
+        elif sector == "long" and quality > 0:
+            time = formulas.long(
+                distance,
+                self.model["gamma"],
+                self.model["E0"],
+                self.model["sigma"],
+                self.model["tau"],
+                self.model["F"],
+            )
+        else:
+            time = None
+            quality = 0 # ^ just in case
+            
+        return time, quality
 
     def predict(self, distance: float, weight_change: float) -> float:
         weight_factor = 1 / (1 + weight_change)
-        # TODO: TRY and in case of key error handle somehow
         self.altered_model["sigma"] = self.altered_model["sigma"] * weight_factor
         self.altered_model["F"] = self.altered_model["F"] * weight_factor
-        return self.get_time(distance), 3
+        return self.predict_simple(distance)
