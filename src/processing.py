@@ -4,6 +4,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
+from src.model import ExtendedKellerApproxModel as formulas
 from src.transformers import DistanceBounder, QualityAssessor, RecordChooser
 
 
@@ -53,9 +54,9 @@ class DataHandler:
         elif quality_warning_level == 1:
             return "Z powodu małych ilości danych na pewnych przedziałach, wynik może być mało wiarygodny"
         else:
-            return "Nie można przewidywać wyniku dla tego dystansu z powodu braku danych"
-
-        
+            return (
+                "Nie można przewidywać wyniku dla tego dystansu z powodu braku danych"
+            )
 
     def predict(self, distance, weight_change) -> Union[float, None]:
         est_time, quality_warning_level = Predictor(self.model).predict(
