@@ -3,10 +3,10 @@ max_distance: 300
 required_points:
   short:
     min: 5
-    reliable: 15
+    reliable: 10
   mid:
     min: 5
-    reliable: 15
+    reliable: 10
   long:
-    min: 6
-    reliable: 20
+    min: 3
+    reliable: 7

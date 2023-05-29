@@ -5,6 +5,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import yaml
+from scipy.optimize import curve_fit
 
 from src.model import ExtendedKellerApproxModel as formulas
 from src.transformers import DistanceBounder, QualityAssessor, RecordChooser
@@ -45,7 +46,7 @@ class DataHandler:
         self.df_working, self.data_quality = data_preprocessor.process()
 
     def estim_model_params(self) -> None:
-        self.model = KellerFitter(self.df_working).fit()
+        self.model = KellerFitter(self.df_working, self.data_quality).fit()
 
     @staticmethod
     def describe_quality(quality_warning_level: int) -> str:
@@ -68,9 +69,11 @@ class DataHandler:
             ).predict(distance, weight_change)
             quality_warning = self.describe_quality(quality_warning_level)
         except ProcessingError as msg:
-            quality_warning = msg
+            quality_warning = str(msg)
         except KeyError:
-            quality_warning = "Z powodu niekompletnego modelu nie można dokonać predykcji" 
+            quality_warning = (
+                "Z powodu niekompletnego modelu nie można dokonać predykcji"
+            )
         return est_time, quality_warning
 
     def reset_data(self) -> None:
@@ -144,35 +147,66 @@ class DataPreprocessor:
 
 
 class KellerFitter:
-    def __init__(self, df: pd.DataFrame) -> None:
+    def __init__(self, df: pd.DataFrame, data_quality: list) -> None:
         self.df = df
-
-    def fit(self) -> dict:
-        # 1. divide data into groups (with extensions)
-        # - might be done by an external transformer
-        # 2. for each sector if quality > 0:
-        # - estimate params by fitting and save them
-        # - if needed use them
-        # - if the model wants to use the args estimated before but cannot find them
-        # raise an error
-        return {
-            "E0": 0,
-            "sigma": 0,
-            "tau": 0,
-            "F": 0,
-            "gamma": 0,
-        }
-
-
-class Predictor:
-    def __init__(self, model: dict, data_quality: list) -> None:
-        self.model = model
         self.sector_qualites = {
             "short": data_quality[0],
             "mid": data_quality[1],
             "long": data_quality[2],
         }
-        self.altered_model = self.model.copy()
+
+    def fit(self) -> dict:
+        # ! *******************************
+        # ! THIS IS HARDCODED - CHANGE THAT
+        # ! *******************************
+        data_div = {
+            "short": self.df[self.df["D"] <= 0.2].sort_values("T"),
+            "mid": self.df[(self.df["D"] >= 0.2) & (self.df["D"] <= 10)].sort_values(
+                "T"
+            ),
+            "long": self.df[self.df["D"] >= 10].sort_values("T"),  # remove sorts
+        }
+        # ! *******************************
+        # ! *******************************
+        # ! *******************************
+        # >>> data_div = RangeSelector(self.df, self.sector_qualites).slice() # or similar to that
+
+        tau, F, E0, sigma, gamma = [np.NAN] * 5
+        if self.sector_qualites["short"] > 0:
+            tau, F = curve_fit(
+                formulas.short, data_div["short"]["D"], data_div["short"]["T"]
+            )[0]
+        if self.sector_qualites["long"] > 0:
+            E0, sigma = curve_fit(
+                lambda D, E0, sigma: formulas.mid(D, E0, sigma, tau, F),
+                data_div["mid"]["D"],
+                data_div["mid"]["T"],
+            )[0]
+        if self.sector_qualites["long"] > 0:
+            gamma, = curve_fit(
+                lambda D, gamma: formulas.long(D, gamma, E0, sigma, tau, F),
+                data_div["long"]["D"],
+                data_div["long"]["T"],
+            )[0]
+
+        return {
+            "gamma": gamma,
+            "E0": E0,
+            "sigma": sigma,
+            "tau": tau,
+            "F": F,
+        }
+
+
+class Predictor:
+    def __init__(self, model: dict, data_quality: list) -> None:
+        self.model_pure = model
+        self.sector_qualites = {
+            "short": data_quality[0],
+            "mid": data_quality[1],
+            "long": data_quality[2],
+        }
+        self.model = self.model_pure.copy()
         self.limits = self.get_config_limits()
 
     @staticmethod
@@ -230,12 +264,12 @@ class Predictor:
             )
         else:
             time = None
-            quality = 0 # ^ just in case
-            
+            quality = 0  # ^ just in case
+
         return time, quality
 
     def predict(self, distance: float, weight_change: float) -> float:
         weight_factor = 1 / (1 + weight_change)
-        self.altered_model["sigma"] = self.altered_model["sigma"] * weight_factor
-        self.altered_model["F"] = self.altered_model["F"] * weight_factor
+        self.model["sigma"] = self.model_pure["sigma"] * weight_factor
+        self.model["F"] = self.model_pure["F"] * weight_factor
         return self.predict_simple(distance)

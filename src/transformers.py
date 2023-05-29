@@ -97,7 +97,6 @@ class QualityAssessor:
             self.sectors[sector_ix]: self.test_sector(sector_ix)
             for sector_ix in range(1, 4)
         }
-        print(sector_penalties)
         # List of penalties based on the partial penalties evaluated on each section
         penalties = [
             sector_penalties["short"][i]

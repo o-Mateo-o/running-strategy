@@ -56,7 +56,7 @@ class ResultsScreen(Screen):
         super().__init__(**kw)
 
     def display_warning(self, msg: str) -> None:
-        self.ids.result_warnings.text = msg
+        self.ids.result_warnings.text = f"UWAGA: {msg}." if msg else ""
 
     def update_input(self) -> None:
         distance_raw = self.ids.distance_slider.real_value
