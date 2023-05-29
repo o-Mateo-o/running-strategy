@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-from kivy.config import Config
 
+from kivy.config import Config
 
 if __name__ == "__main__":
     karczrun_path = Path(os.path.abspath(__file__))

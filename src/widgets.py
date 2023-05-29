@@ -1,9 +1,9 @@
-from kivy.uix.label import Label
-from kivy.uix.spinner import Spinner
+from pathlib import Path
+
+import yaml
 from kivy.uix.label import Label
 from kivy.uix.slider import Slider
-from pathlib import Path
-import yaml
+from kivy.uix.spinner import Spinner
 
 
 class FileInfo(Label):

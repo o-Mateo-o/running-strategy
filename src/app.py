@@ -1,12 +1,13 @@
 from pathlib import Path
+from typing import Any, Union
+
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
 
-from typing import Any, Union
-from src.processing import DataHandler, ProcessingError
 from src.assets import AssetPaths
-from src.widgets import FileInfo, MySpinner, DistanceSlider, WeightSlider
+from src.processing import DataHandler, ProcessingError
+from src.widgets import DistanceSlider, FileInfo, MySpinner, WeightSlider
 
 
 class MainScreen(Screen):

@@ -1,9 +1,10 @@
-import pandas as pd
 import re
-import numpy as np
 from typing import Union
 
-from src.transformers import DistanceBounder, RecordChooser, QualityAssessor, Predictor
+import numpy as np
+import pandas as pd
+
+from src.transformers import DistanceBounder, Predictor, QualityAssessor, RecordChooser
 
 
 class ProcessingError(Exception):

@@ -48,7 +48,6 @@ WindowManager:
 
 
 <MainScreen>:
-
     name: "main_screen"
     id: main_screen
     BoxLayout:
@@ -219,12 +218,6 @@ WindowManager:
             size: (0.6 * root.width, 0.25 * root.height)
             size_hint: None, None
             pos: 0.2 * root.width, 0.2 * root.height
-            # canvas.before:
-            #     Color:
-            #         rgba: 0, 0, 0, 0.3
-            #     Rectangle:
-            #         pos: self.pos
-            #         size: self.size
             Label:
                 id: result_warnings
                 multiline: True
