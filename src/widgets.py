@@ -47,7 +47,6 @@ class SmartSlider(Slider):
     def _logify(x: float) -> float:
         profile = 300
         return ((1 + profile) ** x - 1) / profile
-        # return log(x * profile + 1) / log(profile + 1)
 
     @property
     def real_value(self) -> float:

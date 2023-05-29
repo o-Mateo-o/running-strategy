@@ -66,12 +66,26 @@ class ResultsScreen(Screen):
             self.ids.distance_display.text = f"{distance_raw:.1f} km"
         self.ids.weight_display.text = f"{self.ids.weight_slider.real_value:.1f} %"
 
+    @staticmethod
+    def format_time(total_seconds: Union[int, float, None]) -> str:
+        if total_seconds == None:
+            return "---"
+        m, s = divmod(total_seconds, 60)
+        h, m = divmod(m, 60)
+        h, m, s, dd = int(h), int(m), int(s // 1), int((s % 1) * 100)
+        if h > 0:
+            return f"{h} h {m} min"
+        elif m > 0:
+            return f"{m} min {s} s"
+        else:
+            return f"{s},{dd} s"
+
     def show_predictions(self) -> None:
         if self.manager.current == "results_screen":
             distance = self.ids.distance_slider.real_value
             weight_change_v = self.ids.weight_slider.real_value / 100
             prediction, warning = self.data_handler.predict(distance, weight_change_v)
-            self.ids.est_time.text = "---" if prediction == None else str(prediction)
+            self.ids.est_time.text = self.format_time(prediction)
             self.display_warning(warning)
 
 
