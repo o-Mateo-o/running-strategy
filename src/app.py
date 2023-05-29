@@ -72,13 +72,13 @@ class ResultsScreen(Screen):
             return "---"
         m, s = divmod(total_seconds, 60)
         h, m = divmod(m, 60)
-        h, m, s, dd = int(h), int(m), int(s // 1), int((s % 1) * 100)
+        h, m, s, d = int(h), int(m), int(s // 1), int((s % 1) * 10)
         if h > 0:
             return f"{h} h {m} min"
         elif m > 0:
             return f"{m} min {s} s"
         else:
-            return f"{s},{dd} s"
+            return f"{s},{d} s"
 
     def show_predictions(self) -> None:
         if self.manager.current == "results_screen":

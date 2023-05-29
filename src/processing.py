@@ -46,7 +46,10 @@ class DataHandler:
         self.df_working, self.data_quality = data_preprocessor.process()
 
     def estim_model_params(self) -> None:
-        self.model = KellerFitter(self.df_working, self.data_quality).fit()
+        try:
+            self.model = KellerFitter(self.df_working, self.data_quality).fit()
+        except RuntimeError:
+            raise ProcessingError("Nie można dopasowac modelu do podanych danych.\nSprawdź wybrane kolumny")
 
     @staticmethod
     def describe_quality(quality_warning_level: int) -> str:
