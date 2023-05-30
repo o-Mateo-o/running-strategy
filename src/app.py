@@ -69,7 +69,7 @@ class ResultsScreen(Screen):
 
     @staticmethod
     def format_time(total_seconds: Union[int, float, None]) -> str:
-        if total_seconds == None or total_seconds == NAN:
+        if total_seconds == None or total_seconds is NAN:
             return "---"
         m, s = divmod(total_seconds, 60)
         h, m = divmod(m, 60)
