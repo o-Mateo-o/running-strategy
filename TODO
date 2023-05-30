@@ -1,0 +1,11 @@
+# ISSUES
+
+## #1
+
+Add this code chunk to auto-detect Strava data and select only the proper rows:
+
+    if "Activity Type" in self.df_raw.columns.values:
+        df_filtered = self.df_raw.loc[self.df_raw["Activity Type"] == "Run"]
+        if not df_filtered.empty:
+            self.df_raw = df_filtered
+        # log it somehow

@@ -18,7 +18,6 @@ class ProcessingError(Exception):
 class DataHandler:
     def __init__(self) -> None:
         self.df_raw = None
-        # self.df_filtered = None
         self.df_working = None
         self.data_quality = [0, 0, 0]
         self.model = dict()
@@ -30,15 +29,7 @@ class DataHandler:
     def _read_file(self, path: str) -> None:
         try:
             self.df_raw = pd.read_csv(path)
-
-            # if "Activity Type" in self.df_raw.columns.values:
-
-            #     self.df_filtered = self.df_raw.loc[self.df_raw["Activity Type"] == "Run"]
-            #     if len(self.df_filtered) == 0:
-            #         self.df_filtered = self.df_raw 
-            # else:
-            #     self.df_filtered = self.df_raw
-
+            # TODO: ISSUE #1 from TODO file
         except pd.errors.EmptyDataError:
             raise ProcessingError("Zestaw danych jest pusty")
         except UnicodeDecodeError:
@@ -53,7 +44,6 @@ class DataHandler:
 
     def preprocess_data(self, col_d: str, col_t: str) -> None:
         data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t) 
-        # data_preprocessor = DataPreprocessor(self.df_filtered, col_d, col_t)
         self.df_working, self.data_quality = data_preprocessor.process()
 
     def estim_model_params(self) -> None:
