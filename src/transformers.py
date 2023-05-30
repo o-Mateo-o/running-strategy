@@ -38,8 +38,9 @@ class RecordChooser:
 
     def cleanse(self) -> pd.DataFrame:
         self.df["D_categ"] = self.df["D"].apply(self.categorizer)
-        self.df = self.df.sort_values("T")
-        return self.df.drop_duplicates("D_categ", keep="last")
+        self.df["Pace"] = self.df["T"]/self.df["D"]
+        self.df = self.df.sort_values("Pace")
+        return self.df.drop_duplicates("D_categ", keep="first")
 
 
 class QualityAssessor:
