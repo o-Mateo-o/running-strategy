@@ -8,7 +8,12 @@ import yaml
 from scipy.optimize import curve_fit
 
 from src.model import ExtendedKellerApproxModel as formulas
-from src.transformers import DistanceBounder, QualityAssessor, RecordChooser
+from src.transformers import (
+    ConfigLimits,
+    DistanceBounder,
+    QualityAssessor,
+    RecordChooser,
+)
 
 
 class ProcessingError(Exception):
@@ -43,14 +48,16 @@ class DataHandler:
             raise ProcessingError("Akceptowanym formatem jest tylko CSV")
 
     def preprocess_data(self, col_d: str, col_t: str) -> None:
-        data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t) 
+        data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t)
         self.df_working, self.data_quality = data_preprocessor.process()
 
     def estim_model_params(self) -> None:
         try:
             self.model = KellerFitter(self.df_working, self.data_quality).fit()
         except RuntimeError:
-            raise ProcessingError("Nie można dopasowac modelu do podanych danych.\nSprawdź wybrane kolumny")
+            raise ProcessingError(
+                "Nie można dopasowac modelu do podanych danych.\nSprawdź wybrane kolumny"
+            )
 
     @staticmethod
     def describe_quality(quality_warning_level: int) -> str:
@@ -153,41 +160,52 @@ class DataPreprocessor:
 class KellerFitter:
     def __init__(self, df: pd.DataFrame, data_quality: list) -> None:
         self.df = df
-        self.sector_qualites = {
-            "short": data_quality[0],
-            "mid": data_quality[1],
-            "long": data_quality[2],
-        }
+        self.sector_qualites = data_quality
+        with open(Path("config", "model_const.yml"), "r") as f:
+            self.required_points = yaml.safe_load(f)["required_points"]
+
+    def slice_data(self, sector_ix: int) -> pd.DataFrame:
+        config_limits = ConfigLimits()
+        limits_optimal = config_limits.get_optimal()
+        limits_extended = config_limits.get_extended()
+
+        extended_slice = self.df[
+            (limits_optimal[sector_ix] <= self.df["D"])
+            & (self.df["D"] < limits_extended[sector_ix + 1])
+        ]
+        optimal_slice = extended_slice[
+            extended_slice["D"] < limits_optimal[sector_ix + 1]
+        ]
+
+        translator = ["short", "mid", "long"]
+
+        min_point_count = self.required_points[translator[sector_ix]]["min"]
+        if optimal_slice.shape[0] < min_point_count:
+            extended_slice = extended_slice.sort_values("D")
+            return extended_slice.iloc[: min(extended_slice.shape[0], min_point_count)]
+        else:
+            return optimal_slice
 
     def fit(self) -> dict:
-        # ! *******************************
-        # ! THIS IS HARDCODED - CHANGE THAT
-        # ! *******************************
         data_div = {
-            "short": self.df[self.df["D"] <= 0.2].sort_values("T"),
-            "mid": self.df[(self.df["D"] >= 0.2) & (self.df["D"] <= 10)].sort_values(
-                "T"
-            ),
-            "long": self.df[self.df["D"] >= 10].sort_values("T"),  # remove sorts
+            "short": self.slice_data(0),
+            "mid": self.slice_data(1),
+            "long": self.slice_data(2),
         }
-        # ! *******************************
-        # ! *******************************
-        # ! *******************************
-        # >>> data_div = RangeSelector(self.df, self.sector_qualites).slice() # or similar to that
 
         tau, F, E0, sigma, gamma = [np.NAN] * 5
-        if self.sector_qualites["short"] > 0:
+        if self.sector_qualites[0] > 0:
             tau, F = curve_fit(
                 formulas.short, data_div["short"]["D"], data_div["short"]["T"]
             )[0]
-        if self.sector_qualites["long"] > 0:
+        if self.sector_qualites[1] > 0:
             E0, sigma = curve_fit(
                 lambda D, E0, sigma: formulas.mid(D, E0, sigma, tau, F),
                 data_div["mid"]["D"],
                 data_div["mid"]["T"],
             )[0]
-        if self.sector_qualites["long"] > 0:
-            gamma, = curve_fit(
+        if self.sector_qualites[2] > 0:
+            (gamma,) = curve_fit(
                 lambda D, gamma: formulas.long(D, gamma, E0, sigma, tau, F),
                 data_div["long"]["D"],
                 data_div["long"]["T"],
@@ -211,18 +229,7 @@ class Predictor:
             "long": data_quality[2],
         }
         self.model = self.model_pure.copy()
-        self.limits = self.get_config_limits()
-
-    @staticmethod
-    def get_config_limits() -> list:
-        with open(Path("config", "model_u_bounds.yml"), "r") as f:
-            model_u_bounds = yaml.safe_load(f)
-        with open(Path("config", "model_const.yml"), "r") as f:
-            model_const = yaml.safe_load(f)
-        bound_limits = [model_u_bounds[kind]["optimal"] for kind in ["short", "mid"]]
-        return (
-            [model_const["min_distance"]] + bound_limits + [model_const["max_distance"]]
-        )
+        self.limits = ConfigLimits().get_optimal()
 
     def evaluate_sector(self, distance: float) -> int:
         lower_checks = [distance >= lim for lim in self.limits]

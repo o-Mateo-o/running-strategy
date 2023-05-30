@@ -38,7 +38,7 @@ class RecordChooser:
 
     def cleanse(self) -> pd.DataFrame:
         self.df["D_categ"] = self.df["D"].apply(self.categorizer)
-        self.df["Pace"] = self.df["T"]/self.df["D"]
+        self.df["Pace"] = self.df["T"] / self.df["D"]
         self.df = self.df.sort_values("Pace")
         return self.df.drop_duplicates("D_categ", keep="first")
 
@@ -106,3 +106,31 @@ class QualityAssessor:
             for i in range(3)
         ]
         return penalties
+
+
+class ConfigLimits:
+    def __init__(self) -> None:
+        with open(Path("config", "model_u_bounds.yml"), "r") as f:
+            self.model_u_bounds = yaml.safe_load(f)
+        with open(Path("config", "model_const.yml"), "r") as f:
+            self.model_const = yaml.safe_load(f)
+
+    def get_optimal(self) -> list:
+        bound_limits = [
+            self.model_u_bounds[kind]["optimal"] for kind in ["short", "mid"]
+        ]
+        return (
+            [self.model_const["min_distance"]]
+            + bound_limits
+            + [self.model_const["max_distance"]]
+        )
+
+    def get_extended(self) -> list:
+        bound_limits = [
+            self.model_u_bounds[kind]["extended"] for kind in ["short", "mid"]
+        ]
+        return (
+            [self.model_const["min_distance"]]
+            + bound_limits
+            + [self.model_const["max_distance"]]
+        )
