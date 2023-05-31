@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 from typing import Any, Union
 
@@ -41,6 +42,7 @@ class MainScreen(Screen):
             self.data_handler.process_file(paths[0])
             # show the filename info and add its columns to the spinners
             self.ids.file_info.print_success(Path(paths[0]).name)
+            self._reset_spinners()
             self.ids.spinner_distance.values = self.data_handler.cols
             self.ids.spinner_time.values = self.data_handler.cols
         except ProcessingError as msg:
@@ -69,7 +71,7 @@ class ResultsScreen(Screen):
 
     @staticmethod
     def format_time(total_seconds: Union[int, float, None]) -> str:
-        if total_seconds == None or total_seconds is NAN:
+        if total_seconds == None or total_seconds is NAN or math.isnan(total_seconds):
             return "---"
         m, s = divmod(total_seconds, 60)
         h, m = divmod(m, 60)

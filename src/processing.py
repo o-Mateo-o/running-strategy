@@ -54,7 +54,7 @@ class DataHandler:
     def estim_model_params(self) -> None:
         try:
             self.model = KellerFitter(self.df_working, self.data_quality).fit()
-        except RuntimeError:
+        except (RuntimeError, RuntimeWarning):
             raise ProcessingError(
                 "Nie można dopasowac modelu do podanych danych.\nSprawdź wybrane kolumny"
             )
@@ -283,4 +283,7 @@ class Predictor:
         weight_factor = 1 / (1 + weight_change)
         self.model["sigma"] = self.model_pure["sigma"] * weight_factor
         self.model["F"] = self.model_pure["F"] * weight_factor
-        return self.predict_simple(distance)
+        try:
+            return self.predict_simple(distance)
+        except RuntimeWarning:
+            return None, 0
