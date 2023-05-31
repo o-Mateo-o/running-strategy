@@ -1,7 +1,7 @@
 # Kalkulator rekordów biegowych
 <img src="assets/karcz_run.png" height="100">
 
-[![version](https://img.shields.io/badge/Version-alpha--prerelease-yellow)]()
+[![version](https://img.shields.io/badge/Version-1.0.0-green)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](https://opensource.org/licenses/MIT)
 
 ## Opis projektu
