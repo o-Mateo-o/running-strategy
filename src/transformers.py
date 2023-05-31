@@ -8,12 +8,32 @@ import yaml
 
 
 class DistanceBounder:
+    """Bounder for the data using the distance and the config limits.
+
+    Attributes:
+        df: Data frame of distances and times.
+        model_const: Model constants.
+
+    Args:
+        df: Data frame of (unbounded) distances and times.
+    """
+
     def __init__(self, df: pd.DataFrame) -> None:
         self.df = df
         with open(Path("config", "model_const.yml"), "r") as f:
             self.model_const = yaml.safe_load(f)
 
     def bound(self, bounds: tuple = tuple()) -> pd.DataFrame:
+        """Bound the data.
+        If the bounds are given, use them. Otherwise use the maximal possible bounds
+        from the config file.
+
+        Args:
+            bounds (tuple, optional): . Defaults to the empty tuple.
+
+        Returns:
+            pd.DataFrame: Data frame with the bounded data.
+        """
         if bounds:
             min_dist = bounds[0]
             max_dist = bounds[1]
@@ -24,11 +44,28 @@ class DistanceBounder:
 
 
 class RecordChooser:
+    """Transformer that chooses only records from the data set.
+
+    Attributes:
+        df: Data frame with all the observations.
+
+    Args:
+        df: Data frame with all the observations.
+    """
+
     def __init__(self, df: pd.DataFrame) -> None:
         self.df = df
 
     @staticmethod
     def categorizer(distance: float) -> float:
+        """Round a given distance, with precision respectively to the scale.
+
+        Args:
+            distance (float): Original distance.
+
+        Returns:
+            float: Distance category (rounded value).
+        """
         if distance < 0.1:
             return np.round(distance, 3)
         elif distance < 0.5:
@@ -39,6 +76,12 @@ class RecordChooser:
             return np.round(distance)
 
     def cleanse(self) -> pd.DataFrame:
+        """Choose only the "liminf" of the times.
+        Categorize the times, and having sorted it by peace values, remove duplicates.
+
+        Returns:
+            pd.DataFrame: Frame of a cleansed data.
+        """
         self.df["D_categ"] = self.df["D"].apply(self.categorizer)
         self.df["Pace"] = self.df["T"] / self.df["D"]
         self.df = self.df.sort_values("Pace")
@@ -46,6 +89,17 @@ class RecordChooser:
 
 
 class QualityAssessor:
+    """Assess quality of the data on all three sectors.
+    
+    Attributes:
+        df: Data frame of distances and times.
+        model_const: Model constants.
+        model_u_bounds: Upper bounds of the sectors.
+
+    Args:
+        df: Data frame of distances and times.
+    """
+
     def __init__(self, df: pd.DataFrame) -> None:
         self.df = df
         with open(Path("config", "model_u_bounds.yml"), "r") as f:
@@ -56,6 +110,15 @@ class QualityAssessor:
         self.sectors = ["zero", "short", "mid", "long"]
 
     def _range_value(self, sector: str, kind: str) -> int:
+        """Easily find a range bound value.
+
+        Args:
+            sector (str): Distance sector name.
+            kind (str): Kind of the range ("optimal" or "extended").
+
+        Returns:
+            int: A bound value.
+        """
         bound = self.model_u_bounds[sector][kind]
         return bound if bound != None else np.Inf
 

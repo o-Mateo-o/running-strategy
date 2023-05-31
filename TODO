@@ -9,3 +9,10 @@ Add this code chunk to auto-detect Strava data and select only the proper rows:
         if not df_filtered.empty:
             self.df_raw = df_filtered
         # log it somehow
+
+# Documentation
+
+## Finish:
+- `processing`
+- `transformers`
+- `app`
