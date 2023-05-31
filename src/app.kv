@@ -233,22 +233,19 @@ WindowManager:
         orientation: 'vertical'
         padding: 50
         spacing: 50
-        adaptive_height: True
-        pos_hint: {'center_y':0.5}
 
         Label:
             text_size: self.size
             multiline: True
             markup: True
-            text: "\n[u]Instrukcja[/u]\n Żeby skorzystać z naszej aplikacji musisz mieć przygotowany plik z rozszerzeniem [b].csv[/b], zawierającym przebiegnięte dystanse i czasy, w których udało ci się tego dokonać.\nNa ekranie startowym, poniżej logo, znajdziesz swoje foldery i pliki.Przejdź, klikając w odpowiednie foldery, do folderu, w którym znajduje się twój plik z danymi i go wybierz.\nZ rozwijanych list wybierz odpowiedno kolumnę zawierającą przebiegnięte dystanse i czasy. \nPo kliknięciu przycisku [b]Dalej[/b], przejdziesz na stronę, na której prognozujemy, za pomocą modelu Kelera, czas, w jakim przebiegniesz dany dystans.\nMożesz zmienić dystans i swoją masę za pomocą odpowiednio oznaczonych suwaków. \nMiłej zabawy!"
+            text: root.manual
 
         AnchorLayout:
-            anchor_x: 'center'
-            anchor_y: 'bottom'
+            size_hint_y: 0.2
             MyButton:
                 id: info_go_main
                 text: "Powrót"
-                size_hint: 0.25, 0.15
+                size_hint: 0.25, 0.45
                 on_release:
                     root.manager.transition.direction = "left"
                     app.root.current = "main_screen"

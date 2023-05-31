@@ -1,0 +1,10 @@
+[u]Instrukcja[/u]
+Żeby skorzystać z naszej aplikacji musisz mieć przygotowany plik z rozszerzeniem [b].csv[/b], zawierającym przebiegnięte dystanse i czasy, w z wynikami twoich biegów. Na ekranie startowym, poniżej logo, znajdziesz swoje foldery i pliki. Przejdź, klikając w odpowiednie foldery, do folderu, w którym znajduje się twój plik z danymi i go wybierz.
+
+Z rozwijanych list wybierz odpowiedno kolumnę zawierającą przebiegnięte dystanse i czasy.
+
+Po kliknięciu przycisku [b]Dalej[/b], przejdziesz na stronę, na której prognozujemy, za pomocą aproksymacji rozszerzonego modelu Kelera, czas, w jakim przebiegniesz dany dystans.
+
+Możesz zmienić dystans i swoją masę za pomocą odpowiednio oznaczonych suwaków.
+
+Miłej zabawy!

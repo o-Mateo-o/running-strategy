@@ -93,7 +93,10 @@ class ResultsScreen(Screen):
 
 
 class InfoScreen(Screen):
-    ...
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        with open(Path("config", "user_manual.txt"), "r", encoding="utf-8") as f:
+            self.manual = f.read()
 
 
 class WindowManager(ScreenManager):
