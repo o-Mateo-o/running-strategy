@@ -1,3 +1,6 @@
+"""The main data processing classes. Core data keeper,
+along with the ones regarding preprocessing, fitting and predicting."""
+
 import re
 from pathlib import Path
 from typing import Union
@@ -17,10 +20,21 @@ from src.transformers import (
 
 
 class ProcessingError(Exception):
+    """Error in processing, displayed then by the app."""
+
     ...
 
 
 class DataHandler:
+    """A class that keeps the data and handles the processing operations.
+
+    Attributes:
+        df_raw: Data frame fetched from file.
+        df_working: Data frame processed by the app.
+        data_quality: A list of quality levels for all the three distance sectors.
+        model: A dictionary of model parameter values.
+    """
+
     def __init__(self) -> None:
         self.df_raw = None
         self.df_working = None
@@ -29,9 +43,22 @@ class DataHandler:
 
     @property
     def cols(self) -> np.ndarray:
+        """Property of column names of a pandas DataFrame as a NumPy array.
+
+        Returns:
+            np.ndarray: Columns of a frame.
+        """
         return self.df_raw.columns.values
 
     def _read_file(self, path: str) -> None:
+        """Read data from a csv.
+
+        Args:
+            path (str): Path to the input data file.
+
+        Raises:
+            ProcessingError: If no data or a file cannot be decoded.
+        """
         try:
             self.df_raw = pd.read_csv(path)
             # TODO: ISSUE #1 from TODO file
@@ -41,6 +68,14 @@ class DataHandler:
             raise ProcessingError("Napotkano problem podczas dekodowania pliku")
 
     def process_file(self, path: str) -> None:
+        """Read the file unless it is of the wrong format.
+
+        Args:
+            path (str): Path to the input data file.
+
+        Raises:
+            ProcessingError: When the file is not csv.
+        """
         self.reset_data()
         if bool(re.search(".csv$", path)):
             self._read_file(path)
@@ -48,10 +83,21 @@ class DataHandler:
             raise ProcessingError("Akceptowanym formatem jest tylko CSV")
 
     def preprocess_data(self, col_d: str, col_t: str) -> None:
+        """Preprocess the data to preare it for modeling and find the qualities.
+
+        Args:
+            col_d (str): Name of the distance column.
+            col_t (str): Name of the time column.
+        """
         data_preprocessor = DataPreprocessor(self.df_raw, col_d, col_t)
         self.df_working, self.data_quality = data_preprocessor.process()
 
     def estim_model_params(self) -> None:
+        """Estimate the extended Keller model parameters.
+
+        Raises:
+            ProcessingError: If somethong is wron with the computation.
+        """
         try:
             self.model = KellerFitter(self.df_working, self.data_quality).fit()
         except (RuntimeError, RuntimeWarning):
@@ -61,6 +107,14 @@ class DataHandler:
 
     @staticmethod
     def describe_quality(quality_warning_level: int) -> str:
+        """Translate the quality levels to the correspondong warning messages.
+
+        Args:
+            quality_warning_level (int): Number describing the single quality level.
+
+        Returns:
+            str: A quality warning message.
+        """
         if quality_warning_level >= 3:
             return ""
         elif quality_warning_level == 2:
@@ -72,7 +126,17 @@ class DataHandler:
                 "Nie można przewidywać wyniku dla tego dystansu z powodu braku danych"
             )
 
-    def predict(self, distance, weight_change) -> Union[float, None]:
+    def predict(self, distance: float, weight_change: float) -> tuple:
+        """Perform time predictions for the given distance and weight change.
+        Find also the quality warning for the distance sector.
+
+        Args:
+            distance (float): Distace to esimate time from.
+            weight_change (float): Percent weight change of a runner.
+
+        Returns:
+            tuple: Etimated time and the quality warning message.
+        """
         est_time = None
         try:
             est_time, quality_warning_level = Predictor(
@@ -88,6 +152,7 @@ class DataHandler:
         return est_time, quality_warning
 
     def reset_data(self) -> None:
+        """Reset all the attributes. Data frames, model and the quality levels."""
         self.df_raw = None
         self.df_working = None
         self.data_quality = [0, 0, 0]
@@ -283,6 +348,7 @@ class Predictor:
         weight_factor = 1 / (1 + weight_change)
         self.model["sigma"] = self.model_pure["sigma"] * weight_factor
         self.model["F"] = self.model_pure["F"] * weight_factor
+        self.model["E0"] = self.model_pure["E0"] * weight_factor
         try:
             return self.predict_simple(distance)
         except RuntimeWarning:

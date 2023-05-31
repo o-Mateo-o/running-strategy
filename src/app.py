@@ -13,6 +13,12 @@ from src.widgets import DistanceSlider, FileInfo, MySpinner, WeightSlider
 
 
 class MainScreen(Screen):
+    """The MainScreen class contains methods for handling user input and displaying information
+    related to data processing and file selection within a main screen of GUI application.
+
+    Attributes:
+        data_handler: A class to keep the data and handle the processing operations
+    """
     def __init__(self, **kw) -> None:
         self.data_handler = None
         super().__init__(**kw)

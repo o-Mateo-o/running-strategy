@@ -1,5 +1,7 @@
+# distance bounds
 min_distance: 0.010
 max_distance: 300
+# point count thresholds for all the sectors and qualities
 required_points:
   short:
     min: 5
