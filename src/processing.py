@@ -3,7 +3,6 @@ along with the ones regarding preprocessing, fitting and predicting."""
 
 import re
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -160,7 +159,23 @@ class DataHandler:
 
 
 class DataPreprocessor:
-    # ! DATA UNITS MUST BE [KM] AND [SEC]
+    """_summary_
+
+    .. warning:
+        Input data units must be [km] for distance and [sec] for time.
+
+    Args:
+        df (pd.DataFrame): Raw data frame.
+        col_d (str): Name of the distance column.
+        col_t (str): Name of the time column.
+
+    Attributes:
+        df: Data frame that is transformed.
+        col_d: Name of the distance column.
+        col_t: Name of the time column.
+        data_quality: Quality levels for data sectors.
+    """
+
     def __init__(self, df: pd.DataFrame, col_d: str, col_t: str) -> None:
         self.df = df
         self.col_d = col_d

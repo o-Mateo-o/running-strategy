@@ -1,3 +1,5 @@
+"""Model formulas from the Keller model article."""
+
 import numpy as np
 
 

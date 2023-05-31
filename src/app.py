@@ -1,3 +1,5 @@
+"""Main Kivy app clases. App, screens and their managers."""
+
 import math
 from pathlib import Path
 from typing import Any, Union

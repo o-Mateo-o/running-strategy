@@ -1,3 +1,5 @@
+"""Helper transformers that support the processing classes."""
+
 from pathlib import Path
 
 import numpy as np
