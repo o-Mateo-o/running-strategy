@@ -13,6 +13,4 @@ Add this code chunk to auto-detect Strava data and select only the proper rows:
 # Documentation
 
 ## Finish:
-- `processing`
-- `transformers`
 - `app`

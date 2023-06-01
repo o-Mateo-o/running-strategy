@@ -1,6 +1,7 @@
 """Helper transformers that support the processing classes."""
 
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -90,7 +91,7 @@ class RecordChooser:
 
 class QualityAssessor:
     """Assess quality of the data on all three sectors.
-    
+
     Attributes:
         df: Data frame of distances and times.
         model_const: Model constants.
@@ -124,6 +125,18 @@ class QualityAssessor:
 
     @staticmethod
     def _extension_decision(ix: int, sector_ix: int) -> int:
+        """Find the entailed penalty for an affected sector index
+        and the origin sector index.
+        The origin distance has the worst penalty, and the succeeding ones
+        have some smaler. The distances before are not affected at all.
+
+        Args:
+            ix (int): An index currently analized (affected)
+            sector_ix (int): A reference sector index (origin).
+
+        Returns:
+            int: Entailed penalty.
+        """
         if ix > sector_ix:
             return 1
         elif ix == sector_ix:
@@ -131,8 +144,20 @@ class QualityAssessor:
         else:
             return 0
 
-    def test_sector(self, sector_ix: int) -> list:
-        # ! extend only upper boundaries
+    def test_sector(self, sector_ix: int) -> list[int]:
+        """Find the penalties for all the sectors, related to the data in a given sector.
+        Analyze the quality and make a quality decision for each case, based on the data
+        counts and placement.
+
+        .. note::
+            Only the upper boundaries can be extedned.
+
+        Args:
+            sector_ix (int): Index of a specific sector.
+
+        Returns:
+            list: List of sector penalties caused by the data in the current sector.
+        """
         curr_sector = self.sectors[sector_ix]
         before_sector = self.sectors[sector_ix - 1]
 
@@ -158,7 +183,13 @@ class QualityAssessor:
         else:
             return [3 if ix >= sector_ix else 0 for ix in range(1, 4)]
 
-    def assess(self) -> list:
+    def assess(self) -> list[int]:
+        """Find the combined penalties by assessing it for each sector and summarizing
+        the partial results.
+
+        Returns:
+            list: Combined penalties for each sector.
+        """
         sector_penalties = {
             self.sectors[sector_ix]: self.test_sector(sector_ix)
             for sector_ix in range(1, 4)
@@ -174,13 +205,27 @@ class QualityAssessor:
 
 
 class ConfigLimits:
+    """Sectror limits server. Uses the settings from the config files.
+    On init, load the config.
+
+    Attributes:
+        model_const: Model constants.
+        model_u_bounds: Upper bounds of the sectors.
+    """
+
     def __init__(self) -> None:
         with open(Path("config", "model_u_bounds.yml"), "r") as f:
             self.model_u_bounds = yaml.safe_load(f)
         with open(Path("config", "model_const.yml"), "r") as f:
             self.model_const = yaml.safe_load(f)
 
-    def get_optimal(self) -> list:
+    def get_optimal(self) -> list[Union[int, float]]:
+        """Get the optimal limits of all the data sectors, so those four separators
+        in the |short|mid|long| representation.
+
+        Returns:
+            list: Sector limiters.
+        """
         bound_limits = [
             self.model_u_bounds[kind]["optimal"] for kind in ["short", "mid"]
         ]
@@ -190,7 +235,13 @@ class ConfigLimits:
             + [self.model_const["max_distance"]]
         )
 
-    def get_extended(self) -> list:
+    def get_extended(self) -> list[Union[int, float]]:
+        """Get the extended (maximally right-shifted) limits of all the data sectors,
+        so those four separators in the |short|mid|long| representation.
+
+        Returns:
+            list: Sector limiters.
+        """
         bound_limits = [
             self.model_u_bounds[kind]["extended"] for kind in ["short", "mid"]
         ]

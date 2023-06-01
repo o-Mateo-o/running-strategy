@@ -21,20 +21,33 @@ class MainScreen(Screen):
     Attributes:
         data_handler: A class to keep the data and handle the processing operations
     """
+
     def __init__(self, **kw) -> None:
         self.data_handler = None
         super().__init__(**kw)
 
     def _reset_spinners(self) -> None:
+        """Reset the time and distance spinners."""
         self.ids.spinner_time.reset()
         self.ids.spinner_distance.reset()
 
     def display_error(self, msg: str, file_hint: bool = False) -> None:
+        """Show an error message for either a file related error or not.
+
+        Args:
+            msg (str): Error message.
+            file_hint (bool, optional): Whether the error type is related to the files.
+                Defaults to False.
+        """
         self.ids.file_info.print_error(msg, file_hint)
         if file_hint:
             self._reset_spinners()
 
     def go_results_action(self) -> None:
+        """Change the screen to results.
+        Preprocess the data and fitt the model. In case any errors were catched
+        do not change the screen and print the message.
+        """
         try:
             self.data_handler.preprocess_data(
                 self.ids.spinner_distance.text, self.ids.spinner_time.text
@@ -44,7 +57,16 @@ class MainScreen(Screen):
         except ProcessingError as msg:
             self.display_error(msg)
 
-    def choose_file(self, paths: list) -> None:
+    def choose_file(self, paths: list[str]) -> None:
+        """Do the actions after file choosing event.
+        Read and digest the file, then show the file name in the
+        info tab and update the spinner values.
+        In case any errors were catched do not change the screen and print the message.
+
+        Args:
+            paths (list): Path list. Usualy a list of one file path.
+                The method always uses its first element.
+        """
         try:
             # read and digest the file
             self.data_handler.process_file(paths[0])
@@ -56,7 +78,14 @@ class MainScreen(Screen):
         except ProcessingError as msg:
             self.display_error(msg, file_hint=True)
 
-    def click_file(self, paths: list) -> None:
+    def click_file(self, paths: list[str]) -> None:
+        """Handle an event of file/dir clicking. Only if an object is a file
+        perform the procedures related to file choice.
+
+        Args:
+            paths (list): Path list. Usualy a list of one file path.
+                The method always uses its first element.
+        """
         if paths:
             self.choose_file(paths)
 
@@ -121,4 +150,9 @@ class KarczRunApp(App):
     assets = AssetPaths()
 
     def build(self) -> Union[Any, None]:
+        """Build a kivy app structure based on the .kv file.
+
+        Returns:
+            Union[Any, None]: Kivy app structure.
+        """
         return Builder.load_file(str(Path("src", "app.kv")))
