@@ -91,6 +91,13 @@ class MainScreen(Screen):
 
 
 class ResultsScreen(Screen):
+    """The ResultsScreen class contains methods to set the input for predictions
+    and display its results along with the warning messages in the second screen of GUI application.
+
+    Attributes:
+        data_handler: A class to keep the data and handle the processing operations.
+    """
+
     def __init__(self, **kw) -> None:
         self.data_handler = None
         super().__init__(**kw)
@@ -130,6 +137,12 @@ class ResultsScreen(Screen):
 
 
 class InfoScreen(Screen):
+    """The InfoScreen class contains displays the user manual in a third screen of GUI application.
+
+    Attributes:
+        data_handler: A class to keep the data and handle the processing operations.
+        manual: User manual string content.
+    """
     def __init__(self, **kw):
         super().__init__(**kw)
         with open(Path("config", "user_manual.txt"), "r", encoding="utf-8") as f:
@@ -137,6 +150,12 @@ class InfoScreen(Screen):
 
 
 class WindowManager(ScreenManager):
+    """Screen manager for the main, result and info areas.
+    Automatically connect the screens and data handler both ways.
+
+    Attributes:
+        data_handler: A class to keep the data and handle the processing operations.
+    """
     def __init__(self, **kwargs) -> None:
         self.data_handler = DataHandler()
         super().__init__(**kwargs)
@@ -147,6 +166,11 @@ class WindowManager(ScreenManager):
 
 
 class KarczRunApp(App):
+    """Main app class.
+
+    Attributes:
+        assets: Asset path keeper.
+    """
     assets = AssetPaths()
 
     def build(self) -> Union[Any, None]:
