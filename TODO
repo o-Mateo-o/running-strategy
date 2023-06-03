@@ -10,6 +10,21 @@ Add this code chunk to auto-detect Strava data and select only the proper rows:
             self.df_raw = df_filtered
         # log it somehow
 
+#2
+Add possibltty to write path and display curent path where are we looking for data files.
+
+#3
+Sort colums to choose for distace column first columns with nane wich contains distance, dystans etc 
+
+#4
+Reduce number of columns to choose
+
+#5
+Add option page ???
+
+#6
+Add possibilty to choose two csv and have two predicts ???
+
 # Documentation
 
 ## Finish:
