@@ -73,8 +73,8 @@ class MainScreen(Screen):
             # show the filename info and add its columns to the spinners
             self.ids.file_info.print_success(Path(paths[0]).name)
             self._reset_spinners()
-            self.ids.spinner_distance.values = self.data_handler.cols
-            self.ids.spinner_time.values = self.data_handler.cols
+            self.ids.spinner_distance.values = sorted(self.data_handler.cols, key=lambda x: 'distance' not in x.lower() and 'dystans' not in x.lower())
+            self.ids.spinner_time.values = sorted(self.data_handler.cols, key=lambda x: 'time' not in x.lower() and 'czas' not in x.lower())
         except ProcessingError as msg:
             self.display_error(msg, file_hint=True)
 
@@ -104,6 +104,7 @@ class ResultsScreen(Screen):
 
     def display_warning(self, msg: str) -> None:
         self.ids.result_warnings.text = f"UWAGA: {msg}." if msg else ""
+        self.ids.result_warnings.color = (0,0,0)
 
     def update_input(self) -> None:
         distance_raw = self.ids.distance_slider.real_value
