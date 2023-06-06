@@ -73,8 +73,15 @@ class MainScreen(Screen):
             # show the filename info and add its columns to the spinners
             self.ids.file_info.print_success(Path(paths[0]).name)
             self._reset_spinners()
-            self.ids.spinner_distance.values = sorted(self.data_handler.cols, key=lambda x: 'distance' not in x.lower() and 'dystans' not in x.lower())
-            self.ids.spinner_time.values = sorted(self.data_handler.cols, key=lambda x: 'time' not in x.lower() and 'czas' not in x.lower())
+            self.ids.spinner_distance.values = sorted(
+                self.data_handler.cols,
+                key=lambda x: "distance" not in x.lower()
+                and "dystans" not in x.lower(),
+            )
+            self.ids.spinner_time.values = sorted(
+                self.data_handler.cols,
+                key=lambda x: "time" not in x.lower() and "czas" not in x.lower(),
+            )
         except ProcessingError as msg:
             self.display_error(msg, file_hint=True)
 
@@ -104,7 +111,7 @@ class ResultsScreen(Screen):
 
     def display_warning(self, msg: str) -> None:
         self.ids.result_warnings.text = f"UWAGA: {msg}." if msg else ""
-        self.ids.result_warnings.color = (0,0,0)
+        self.ids.result_warnings.color = (0, 0, 0)
 
     def update_input(self) -> None:
         distance_raw = self.ids.distance_slider.real_value
@@ -144,6 +151,7 @@ class InfoScreen(Screen):
         data_handler: A class to keep the data and handle the processing operations.
         manual: User manual string content.
     """
+
     def __init__(self, **kw):
         super().__init__(**kw)
         with open(Path("config", "user_manual.txt"), "r", encoding="utf-8") as f:
@@ -157,6 +165,7 @@ class WindowManager(ScreenManager):
     Attributes:
         data_handler: A class to keep the data and handle the processing operations.
     """
+
     def __init__(self, **kwargs) -> None:
         self.data_handler = DataHandler()
         super().__init__(**kwargs)
@@ -172,6 +181,7 @@ class KarczRunApp(App):
     Attributes:
         assets: Asset path keeper.
     """
+
     assets = AssetPaths()
 
     def build(self) -> Union[Any, None]:
